@@ -1,0 +1,1 @@
+{"name":"teamboard","version":"1.0.0","main":"team_server.js","scripts":{"start":"node team_server.js"}}
