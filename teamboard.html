@@ -16,7 +16,7 @@
   --yellow:#F7A600; --yellow-l:#FFF8E6;
   --sh0:0 1px 2px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);
   --sh1:0 4px 16px rgba(0,0,0,.08); --sh2:0 8px 32px rgba(0,0,0,.12);
-  --r:16px; --rs:10px;h
+  --r:16px; --rs:10px;
 }
 body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--g900); min-height:100vh; }
 /* LOGIN */
@@ -349,6 +349,40 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
 /* TOAST */
 .toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(12px); background:var(--g900); color:#fff; font-size:14px; font-weight:600; padding:12px 24px; border-radius:100px; z-index:200; opacity:0; transition:all .25s; pointer-events:none; white-space:nowrap; }
 .toast.on { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* RETOUCH */
+.rt-card { background:var(--white); border-radius:var(--r); padding:20px; box-shadow:var(--sh0); margin-bottom:16px; }
+.rt-card-title { font-size:15px; font-weight:700; color:var(--g900); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.rt-form { display:grid; grid-template-columns:1.1fr 1.1fr .7fr auto; gap:8px; align-items:end; }
+.rt-f { display:flex; flex-direction:column; gap:5px; }
+.rt-fl { font-size:12px; font-weight:600; color:var(--g500); }
+.rt-inp { padding:10px 12px; border:1.5px solid var(--g200); border-radius:var(--rs); font-size:14px; font-family:inherit; outline:none; color:var(--g900); width:100%; }
+.rt-inp:focus { border-color:var(--blue); }
+.rt-sub { padding:11px 20px; background:var(--blue); color:#fff; border:none; border-radius:var(--rs); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; white-space:nowrap; }
+.rt-sub:hover { background:var(--blue-h); }
+.rt-item { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--g200); border-radius:var(--rs); margin-bottom:8px; font-size:14px; }
+.rt-date { font-family:monospace; font-size:13px; color:var(--g600); flex-shrink:0; }
+.rt-bride { font-weight:600; color:var(--g900); flex:1; }
+.rt-cnt { font-weight:700; color:var(--blue); flex-shrink:0; }
+.rt-del { border:none; background:none; color:var(--g400); cursor:pointer; font-size:16px; padding:2px 6px; font-family:inherit; }
+.rt-del:hover { color:var(--red); }
+.rt-empty { font-size:13px; color:var(--g500); padding:14px 0; text-align:center; }
+.rt-sum { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.rt-sum-box { background:var(--blue-l); border-radius:var(--rs); padding:12px 18px; }
+.rt-sum-l { font-size:12px; color:var(--g600); font-weight:600; margin-bottom:3px; }
+.rt-sum-v { font-size:20px; font-weight:800; color:var(--blue); }
+.rt-tbl { width:100%; border-collapse:collapse; font-size:14px; }
+.rt-tbl th { background:var(--g50); padding:11px 12px; text-align:left; font-weight:700; color:var(--g700); font-size:13px; border-bottom:1.5px solid var(--g200); }
+.rt-tbl td { padding:12px; border-bottom:1px solid var(--g100); }
+.rt-tbl tr.rt-emp-row { cursor:pointer; }
+.rt-tbl tr.rt-emp-row:hover { background:var(--g50); }
+.rt-detail td { background:var(--g50); font-size:13px; color:var(--g600); padding:8px 12px 8px 28px; }
+.rt-mode { display:flex; gap:6px; }
+.rt-mode-btn { padding:6px 12px; font-size:12px; font-weight:600; border:1px solid var(--g300); background:var(--white); color:var(--g600); border-radius:8px; cursor:pointer; font-family:inherit; }
+.rt-mode-btn.on { background:var(--blue); color:#fff; border-color:var(--blue); }
+.rt-chk { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--g600); cursor:pointer; user-select:none; margin-top:8px; }
+.rt-chk input { width:16px; height:16px; accent-color:var(--blue); cursor:pointer; }
+@media(max-width:720px){ .rt-form { grid-template-columns:1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -399,6 +433,7 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
     <button class="stab" onclick="sat('notice')">공지·주의사항 <span id="notice-unread-cnt"></span></button>
     <button class="stab" onclick="sat('approval')">결재함 <span id="approval-unread-cnt"></span></button>
     <button class="stab" onclick="sat('ip')">접속 관리</button>
+    <button class="stab" onclick="sat('retouch')">보정 집계</button>
   </div>
   <div class="sec on" id="s-ov">
     <div class="stats" id="stats"></div>
@@ -436,6 +471,7 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
       </div>
     </div>
   </div>
+  <div class="sec" id="s-att">
     <div class="month-nav">
       <button class="mnbtn" onclick="attMonth(-1)">‹</button>
       <div class="month-title" id="att-month-title">---</div>
@@ -476,6 +512,22 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
       <div class="ip-card-title">📋 외부 접속 로그</div>
       <div id="ext-log-list"></div>
     </div>
+  </div>
+  <div class="sec" id="s-retouch">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;">
+      <div class="sec-title" style="margin-bottom:0">보정 월별 집계</div>
+      <div class="rt-mode">
+        <button class="rt-mode-btn on" id="rtmode-reg" onclick="setRtMode('reg')">등록일 기준</button>
+        <button class="rt-mode-btn" id="rtmode-wed" onclick="setRtMode('wed')">예식일 기준</button>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--g500);margin-bottom:18px">팀원 행을 누르면 건별 내역이 펼쳐집니다</div>
+    <div class="month-nav">
+      <button class="mnbtn" onclick="rtMonth(-1)">‹</button>
+      <div class="month-title" id="rt-month-title">---</div>
+      <button class="mnbtn" onclick="rtMonth(1)">›</button>
+    </div>
+    <div id="rt-admin-wrap"></div>
   </div>
   <div id="tpanel">
     <div class="phdr">
@@ -538,6 +590,7 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
       <canvas class="greet-char" id="egc" width="80" height="80"></canvas>
       <div><div class="greet-name" id="egn">---</div><div class="greet-sub" id="egd">---</div></div>
     </div>
+    <div id="retouch-section"></div>
     <div class="board-title">📋 나의 업무</div>
     <div id="daily-report-section"></div>
     <div id="req-section"></div>
@@ -708,7 +761,8 @@ setInterval(async () => {
     _cache = fresh;
     // 화면 자동 갱신
     if (cu === 'admin' && document.getElementById('s-ov').classList.contains('on')) renderOv();
-    if (cu && cu !== 'admin') renderEt();
+    if (cu && cu !== 'admin') { renderEt(); renderRetouchStaff(); }
+    if (cu === 'admin' && document.getElementById('s-retouch') && document.getElementById('s-retouch').classList.contains('on')) renderRetouchAdmin();
   } catch {}
 }, 5000);
 
@@ -833,6 +887,7 @@ async function sLogin(){
   renderEt();
   renderDailyReport();
   renderReqSection();
+  renderRetouchStaff();
   // 미확인 공지 있으면 모달 표시
   showNoticesForEmp(emp);
   ct=setInterval(()=>{document.getElementById('eht').textContent=new Date().toLocaleTimeString('ko-KR')},1000);
@@ -925,7 +980,7 @@ function setNType(t){
   document.getElementById('ntype-personal-target').style.display=t==='personal'?'block':'none';
 }
 function sat(t){
-  const tabs=['ov','mg','att','notice','approval','ip'];
+  const tabs=['ov','mg','att','notice','approval','ip','retouch'];
   document.querySelectorAll('.stab').forEach((b,i)=>b.classList.toggle('on',tabs[i]===t));
   tabs.forEach(id=>{
     const el=document.getElementById(`s-${id}`);
@@ -937,6 +992,7 @@ function sat(t){
   if(t==='mg')renderMg();
   if(t==='notice')renderNoticeAdmin();
   if(t==='approval'){window._approvalFilter='all';renderApprovalList();}
+  if(t==='retouch'){renderRetouchAdmin();}
 }
 // Overview
 function getSt(id){
@@ -991,7 +1047,10 @@ function saveEmp(id){
   if(!name){toast('이름을 입력해주세요');return;}
   if(!code){toast('접속 코드를 입력해주세요');return;}
   if(emps.some((e,i)=>i!==idx&&e.code===code)){toast('이미 사용 중인 코드입니다');return;}
-  emps[idx].name=name;emps[idx].code=code;sEmps(emps);
+  const rtEl=document.getElementById(`mr-${id}`);
+  emps[idx].name=name;emps[idx].code=code;
+  emps[idx].retouch=rtEl?rtEl.checked:!!emps[idx].retouch;
+  sEmps(emps);
   renderMg();renderOv();toast(`${name} 저장 완료`);
 }
 function delEmp(id){
@@ -1013,7 +1072,9 @@ function renderMg(){
             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
         <div class="mfield"><div class="mfl">접속 코드</div>
           <input type="text" class="minput code" id="mc-${e.id}" value="${e.code}" placeholder="예: abc123"
-            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en"></div>
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en">
+          <label class="rt-chk"><input type="checkbox" id="mr-${e.id}" ${e.retouch?'checked':''}>보정 기록 사용</label>
+        </div>
       </div>
       <div class="mbtns">
         <button class="btn-sv" onclick="saveEmp('${e.id}')">저장</button>
@@ -1350,6 +1411,161 @@ function confirmNotices(){
 }
 
 // Util
+
+// ── 보정 기록 시스템 ──
+let rtDate = new Date();
+let rtMode = 'reg';
+let rtOpen = {};
+
+function gRetouch(){ return _cache.retouch||[]; }
+function myEmp(){ if(!cu||cu==='admin')return null; return gEmps().find(e=>e.id===cu.id)||cu; }
+function canRetouch(){ const e=myEmp(); return !!(e&&e.retouch); }
+function rtKeyOf(r){ return rtMode==='wed' ? (r.wdate||'') : (r.createdAt||'').slice(0,10); }
+function rtMonthKey(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+
+function addRetouchRec(){
+  const wd=document.getElementById('rt-wdate').value;
+  const bride=document.getElementById('rt-bride').value.trim();
+  const cnt=parseInt(document.getElementById('rt-count').value,10);
+  if(!wd){toast('예식일자를 선택해주세요');return;}
+  if(!bride){toast('신부 성함을 입력해주세요');return;}
+  if(!cnt||cnt<1){toast('보정 장수를 입력해주세요');return;}
+  const emp=myEmp();
+  const rec={id:'r'+Date.now(),empId:emp.id,empName:emp.name,wdate:wd,bride:bride,count:cnt,createdAt:new Date().toISOString()};
+  if(!_cache.retouch)_cache.retouch=[];
+  _cache.retouch.unshift(rec);
+  fetch('/api/retouch',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'add',rec})}).catch(()=>{});
+  document.getElementById('rt-bride').value='';
+  document.getElementById('rt-count').value='';
+  document.getElementById('rt-bride').focus();
+  renderRetouchList();
+  toast(`${bride}님 ${cnt}장 등록 완료`);
+}
+
+function delRetouchRec(id){
+  if(!confirm('이 기록을 삭제할까요?'))return;
+  _cache.retouch=gRetouch().filter(r=>r.id!==id);
+  fetch('/api/retouch',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'del',id})}).catch(()=>{});
+  renderRetouchList();
+  toast('삭제 완료');
+}
+
+function renderRetouchStaff(){
+  const box=document.getElementById('retouch-section');
+  if(!box||!cu||cu==='admin')return;
+  if(!canRetouch()){ box.innerHTML=''; box.dataset.built=''; return; }
+  if(box.dataset.built!=='1'){
+    box.innerHTML=`
+    <div class="rt-card">
+      <div class="rt-card-title">🎞️ 보정 기록 입력</div>
+      <div class="rt-form">
+        <div class="rt-f"><div class="rt-fl">예식일자</div>
+          <input type="date" class="rt-inp" id="rt-wdate"></div>
+        <div class="rt-f"><div class="rt-fl">신부 성함</div>
+          <input type="text" class="rt-inp" id="rt-bride" placeholder="예: 김지영" autocomplete="off"></div>
+        <div class="rt-f"><div class="rt-fl">보정 장수</div>
+          <input type="number" class="rt-inp" id="rt-count" min="1" placeholder="0" autocomplete="off"></div>
+        <button class="rt-sub" onclick="addRetouchRec()">등록</button>
+      </div>
+    </div>
+    <div class="rt-card">
+      <div class="rt-card-title">📊 이번 달 내 보정 <span id="rt-my-month" style="color:var(--g500);font-weight:600"></span></div>
+      <div id="rt-my-wrap"></div>
+    </div>`;
+    box.dataset.built='1';
+  }
+  renderRetouchList();
+}
+
+function renderRetouchList(){
+  const wrap=document.getElementById('rt-my-wrap');
+  if(!wrap||!cu||cu==='admin')return;
+  const mk=rtMonthKey(new Date());
+  const mine=gRetouch().filter(r=>r.empId===cu.id);
+  const thisMonth=mine.filter(r=>(r.createdAt||'').slice(0,7)===mk);
+  const total=thisMonth.reduce((s,r)=>s+(r.count||0),0);
+  const recent=mine.slice(0,20);
+  const mEl=document.getElementById('rt-my-month');
+  if(mEl)mEl.textContent=`(${mk})`;
+  wrap.innerHTML=`
+      <div class="rt-sum">
+        <div class="rt-sum-box"><div class="rt-sum-l">총 장수</div><div class="rt-sum-v">${total.toLocaleString()}장</div></div>
+        <div class="rt-sum-box"><div class="rt-sum-l">건수</div><div class="rt-sum-v">${thisMonth.length}건</div></div>
+      </div>
+      ${recent.length?recent.map(r=>`
+        <div class="rt-item">
+          <span class="rt-date">${r.wdate||'-'}</span>
+          <span class="rt-bride">${r.bride}</span>
+          <span class="rt-cnt">${(r.count||0).toLocaleString()}장</span>
+          <button class="rt-del" onclick="delRetouchRec('${r.id}')" title="삭제">✕</button>
+        </div>`).join(''):'<div class="rt-empty">아직 등록된 기록이 없습니다</div>'}`;
+}
+
+function setRtMode(m){
+  rtMode=m;
+  document.getElementById('rtmode-reg').classList.toggle('on',m==='reg');
+  document.getElementById('rtmode-wed').classList.toggle('on',m==='wed');
+  renderRetouchAdmin();
+}
+function rtMonth(delta){
+  rtDate=new Date(rtDate.getFullYear(),rtDate.getMonth()+delta,1);
+  renderRetouchAdmin();
+}
+function rtToggle(empId){
+  rtOpen[empId]=!rtOpen[empId];
+  renderRetouchAdmin();
+}
+
+function renderRetouchAdmin(){
+  const mk=rtMonthKey(rtDate);
+  const tEl=document.getElementById('rt-month-title');
+  if(tEl)tEl.textContent=`${rtDate.getFullYear()}년 ${rtDate.getMonth()+1}월`;
+  const rows=gRetouch().filter(r=>rtKeyOf(r).slice(0,7)===mk);
+  const wrap=document.getElementById('rt-admin-wrap');
+  if(!wrap)return;
+  if(!rows.length){
+    wrap.innerHTML='<div class="rt-card"><div class="rt-empty">이 달에 등록된 보정 기록이 없습니다</div></div>';
+    return;
+  }
+  const byEmp={};
+  rows.forEach(r=>{
+    if(!byEmp[r.empId])byEmp[r.empId]={name:r.empName||'(이름없음)',cnt:0,total:0,list:[]};
+    byEmp[r.empId].cnt++;
+    byEmp[r.empId].total+=(r.count||0);
+    byEmp[r.empId].list.push(r);
+  });
+  const grand=rows.reduce((s,r)=>s+(r.count||0),0);
+  const ids=Object.keys(byEmp).sort((a,b)=>byEmp[b].total-byEmp[a].total);
+  wrap.innerHTML=`
+    <div class="rt-sum">
+      <div class="rt-sum-box"><div class="rt-sum-l">전체 보정 장수</div><div class="rt-sum-v">${grand.toLocaleString()}장</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">전체 건수</div><div class="rt-sum-v">${rows.length}건</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">참여 팀원</div><div class="rt-sum-v">${ids.length}명</div></div>
+    </div>
+    <div class="rt-card" style="padding:0;overflow:hidden;">
+      <table class="rt-tbl">
+        <thead><tr><th>팀원</th><th style="text-align:right">건수</th><th style="text-align:right">총 장수</th></tr></thead>
+        <tbody>
+        ${ids.map(id=>{
+          const e=byEmp[id];
+          const detail=e.list.slice().sort((a,b)=>(rtKeyOf(a)<rtKeyOf(b)?1:-1));
+          return `<tr class="rt-emp-row" onclick="rtToggle('${id}')">
+            <td><b>${rtOpen[id]?'▾':'▸'} ${e.name}</b></td>
+            <td style="text-align:right">${e.cnt}건</td>
+            <td style="text-align:right;font-weight:700;color:var(--blue)">${e.total.toLocaleString()}장</td>
+          </tr>
+          ${rtOpen[id]?detail.map(r=>`<tr class="rt-detail">
+            <td colspan="3">${r.wdate||'-'} · ${r.bride} · <b>${(r.count||0).toLocaleString()}장</b>
+              <span style="color:var(--g400);margin-left:8px;font-size:12px">등록 ${(r.createdAt||'').slice(0,10)}</span></td>
+          </tr>`).join(''):''}`;
+        }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
 function fmt(iso){try{return new Date(iso).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return iso}}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500);}
 

@@ -9,7 +9,7 @@ function loadDB(){
   try{
     if(fs.existsSync(DB_PATH))return JSON.parse(fs.readFileSync(DB_PATH,'utf8'));
   }catch(e){console.log('DB 읽기 오류:',e.message);}
-  return {employees:[],tasks:{},attend:{},allowedIPs:[],extLogs:[],notices:[],checked:{},reports:{},requests:[]};
+  return {employees:[],tasks:{},attend:{},allowedIPs:[],extLogs:[],notices:[],checked:{},reports:{},requests:[],retouch:[]};
 }
 function saveDB(d){
   try{
@@ -44,8 +44,33 @@ const srv=http.createServer((req,res)=>{
   if(p==='/api/db'&&req.method==='POST'){
     let b='';req.on('data',c=>b+=c);
     req.on('end',()=>{
-      try{mem=JSON.parse(b);scheduleSave();res.writeHead(200);res.end('{"ok":true}');}
+      try{
+        const incoming=JSON.parse(b);
+        // 보정 기록은 전용 통로로만 수정 (전체 덮어쓰기로 유실되는 것 방지)
+        incoming.retouch=mem.retouch||[];
+        mem=incoming;scheduleSave();res.writeHead(200);res.end('{"ok":true}');
+      }
       catch{res.writeHead(400);res.end('{"error":"invalid"}');}
+    });return;
+  }
+  if(p==='/api/retouch'&&req.method==='POST'){
+    let b='';req.on('data',c=>b+=c);
+    req.on('end',()=>{
+      try{
+        const d=JSON.parse(b);
+        if(!mem.retouch)mem.retouch=[];
+        if(d.action==='add'&&d.rec&&d.rec.id){
+          if(!mem.retouch.some(r=>r.id===d.rec.id))mem.retouch.unshift(d.rec);
+          if(mem.retouch.length>5000)mem.retouch=mem.retouch.slice(0,5000);
+        }else if(d.action==='del'&&d.id){
+          mem.retouch=mem.retouch.filter(r=>r.id!==d.id);
+        }else{
+          res.writeHead(400);res.end('{"error":"invalid"}');return;
+        }
+        scheduleSave();
+        res.writeHead(200,{'Content-Type':'application/json'});
+        res.end(JSON.stringify({ok:true,count:mem.retouch.length}));
+      }catch{res.writeHead(400);res.end('{"error":"invalid"}');}
     });return;
   }
   if(p==='/api/attend'&&req.method==='POST'){
