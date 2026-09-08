@@ -383,6 +383,78 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
 .rt-chk { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--g600); cursor:pointer; user-select:none; margin-top:8px; }
 .rt-chk input { width:16px; height:16px; accent-color:var(--blue); cursor:pointer; }
 @media(max-width:720px){ .rt-form { grid-template-columns:1fr 1fr; } }
+
+/* ORG (소속·파트) */
+.dept-block { margin-bottom:28px; }
+.dept-hd { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.dept-name { font-size:17px; font-weight:800; color:var(--g900); }
+.dept-cnt { font-size:12px; font-weight:700; color:var(--g600); background:var(--g100); padding:3px 9px; border-radius:999px; }
+.part-hd { font-size:13px; font-weight:700; color:var(--g500); margin:14px 0 10px; display:flex; align-items:center; gap:7px; }
+.part-hd::before { content:''; width:4px; height:13px; border-radius:2px; background:var(--blue); }
+.part-hd.p-photo::before { background:#A78BFA; }
+.part-hd.p-video::before { background:#F7A600; }
+.part-hd.p-marketing::before { background:#0DCB66; }
+.part-hd.p-content::before { background:#F04452; }
+.tag { display:inline-block; font-size:11px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--g100); color:var(--g600); }
+.tag.t-rt { background:var(--blue-l); color:var(--blue); }
+.tag.t-ed { background:var(--yellow-l); color:#B07200; }
+.msel { padding:9px 12px; border:1.5px solid var(--g200); border-radius:var(--rs); font-size:14px; font-family:inherit; outline:none; color:var(--g900); background:var(--white); width:100%; }
+.msel:focus { border-color:var(--blue); }
+
+/* DAILY 집계 */
+.rt-day-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+.rt-day-tbl th { background:var(--g50); padding:10px 8px; font-weight:700; color:var(--g700); font-size:12px; border-bottom:1.5px solid var(--g200); white-space:nowrap; }
+.rt-day-tbl td { padding:9px 8px; border-bottom:1px solid var(--g100); text-align:center; }
+.rt-day-tbl td.d-date { text-align:left; font-family:monospace; color:var(--g600); white-space:nowrap; }
+.rt-day-tbl tr.d-today { background:var(--blue-l); }
+.rt-day-tbl tfoot td { font-weight:800; background:var(--g50); border-top:1.5px solid var(--g200); }
+.d-zero { color:var(--g300); }
+.d-ok { color:var(--green); font-weight:700; }
+.d-under { color:var(--red); font-weight:700; }
+.d-none { color:var(--g900); font-weight:700; }
+.rt-scroll { overflow-x:auto; }
+.goal-note { font-size:12px; color:var(--g500); margin-top:10px; line-height:1.6; }
+
+/* EDIT (영상 편집 기록) */
+.ed-form { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; align-items:end; }
+.ed-form2 { display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:14px; }
+.ed-prod { display:flex; gap:6px; }
+.ed-prod-btn { padding:9px 14px; font-size:13px; font-weight:700; border:1.5px solid var(--g300); background:var(--white); color:var(--g600); border-radius:var(--rs); cursor:pointer; font-family:inherit; }
+.ed-prod-btn.on { background:var(--blue); color:#fff; border-color:var(--blue); }
+.ed-chks { display:flex; gap:14px; }
+.ed-chk { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--g700); cursor:pointer; user-select:none; }
+.ed-chk input { width:17px; height:17px; accent-color:var(--blue); cursor:pointer; }
+.ed-item { display:flex; align-items:center; gap:10px; padding:12px 14px; border:1px solid var(--g200); border-radius:var(--rs); margin-bottom:8px; font-size:14px; flex-wrap:wrap; }
+.ed-couple { font-weight:700; color:var(--g900); flex:1; min-width:110px; }
+.pill { font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; white-space:nowrap; }
+.pill.p-1cam { background:var(--g100); color:var(--g700); }
+.pill.p-2cam { background:#EDE9FE; color:#6D3BF0; }
+.pill.ok { background:var(--green-l); color:#0A9E50; }
+.pill.part { background:var(--yellow-l); color:#B07200; }
+@media(max-width:720px){ .ed-form { grid-template-columns:1fr 1fr; } }
+
+/* ATTEND CARD (팀원 출퇴근 버튼) */
+.ac { background:var(--white); border-radius:var(--r); padding:22px; box-shadow:var(--sh0); margin-bottom:16px; }
+.ac-top { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+.ac-title { font-size:15px; font-weight:700; color:var(--g900); display:flex; align-items:center; gap:8px; }
+.ac-work { font-size:12px; font-weight:700; color:var(--g500); background:var(--g100); padding:5px 10px; border-radius:8px; }
+.ac-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.ac-box { flex:1; min-width:120px; background:var(--g50); border-radius:var(--rs); padding:13px 15px; }
+.ac-l { font-size:12px; color:var(--g500); font-weight:600; margin-bottom:4px; }
+.ac-v { font-size:19px; font-weight:800; color:var(--g900); font-variant-numeric:tabular-nums; }
+.ac-v.late { color:var(--red); }
+.ac-v.ok { color:var(--green); }
+.ac-v.none { color:var(--g300); }
+.ac-btns { display:flex; gap:10px; }
+.ac-btn { flex:1; padding:15px; border:none; border-radius:var(--rs); font-size:15px; font-weight:700; font-family:inherit; cursor:pointer; transition:all .15s; }
+.ac-in { background:var(--blue); color:#fff; }
+.ac-in:hover:not(:disabled) { background:var(--blue-h); }
+.ac-out { background:var(--g800); color:#fff; }
+.ac-out:hover:not(:disabled) { background:var(--g900); }
+.ac-btn:disabled { background:var(--g200); color:var(--g400); cursor:not-allowed; }
+.ac-warn { margin-top:12px; background:var(--red-l); border:1.5px solid var(--red); border-radius:var(--rs); padding:11px 14px; font-size:13px; font-weight:700; color:#C4303C; }
+.ac-note { margin-top:10px; font-size:12px; color:var(--g500); line-height:1.6; }
+.att-late-pill { font-size:10px; background:var(--red-l); color:var(--red); padding:2px 6px; border-radius:99px; font-weight:800; }
 </style>
 </head>
 <body>
@@ -434,6 +506,7 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
     <button class="stab" onclick="sat('approval')">결재함 <span id="approval-unread-cnt"></span></button>
     <button class="stab" onclick="sat('ip')">접속 관리</button>
     <button class="stab" onclick="sat('retouch')">보정 집계</button>
+    <button class="stab" onclick="sat('edit')">영상 편집</button>
   </div>
   <div class="sec on" id="s-ov">
     <div class="stats" id="stats"></div>
@@ -515,19 +588,41 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
   </div>
   <div class="sec" id="s-retouch">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;">
-      <div class="sec-title" style="margin-bottom:0">보정 월별 집계</div>
-      <div class="rt-mode">
-        <button class="rt-mode-btn on" id="rtmode-reg" onclick="setRtMode('reg')">등록일 기준</button>
-        <button class="rt-mode-btn" id="rtmode-wed" onclick="setRtMode('wed')">예식일 기준</button>
+      <div class="sec-title" style="margin-bottom:0">보정 집계</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <div class="rt-mode">
+          <button class="rt-mode-btn on" id="rtview-day" onclick="setRtView('day')">일별</button>
+          <button class="rt-mode-btn" id="rtview-month" onclick="setRtView('month')">월 누계</button>
+        </div>
+        <div class="rt-mode">
+          <button class="rt-mode-btn on" id="rtmode-reg" onclick="setRtMode('reg')">작업일 기준</button>
+          <button class="rt-mode-btn" id="rtmode-wed" onclick="setRtMode('wed')">예식일 기준</button>
+        </div>
       </div>
     </div>
-    <div style="font-size:13px;color:var(--g500);margin-bottom:18px">팀원 행을 누르면 건별 내역이 펼쳐집니다</div>
+    <div style="font-size:13px;color:var(--g500);margin-bottom:18px" id="rt-help">날짜별 보정 장수입니다. 일일 할당량은 팀원 관리 탭에서 설정합니다</div>
     <div class="month-nav">
       <button class="mnbtn" onclick="rtMonth(-1)">‹</button>
       <div class="month-title" id="rt-month-title">---</div>
       <button class="mnbtn" onclick="rtMonth(1)">›</button>
     </div>
     <div id="rt-admin-wrap"></div>
+  </div>
+  <div class="sec" id="s-edit">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px;">
+      <div class="sec-title" style="margin-bottom:0">영상 편집 집계</div>
+      <div class="rt-mode">
+        <button class="rt-mode-btn on" id="edview-day" onclick="setEdView('day')">일별</button>
+        <button class="rt-mode-btn" id="edview-month" onclick="setEdView('month')">월 누계</button>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--g500);margin-bottom:18px">1인1캠 = 하이라이트 또는 챕터별 중 1종 / 1인2캠 = 하이라이트 + 챕터별 모두</div>
+    <div class="month-nav">
+      <button class="mnbtn" onclick="edMonth(-1)">‹</button>
+      <div class="month-title" id="ed-month-title">---</div>
+      <button class="mnbtn" onclick="edMonth(1)">›</button>
+    </div>
+    <div id="ed-admin-wrap"></div>
   </div>
   <div id="tpanel">
     <div class="phdr">
@@ -590,7 +685,9 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
       <canvas class="greet-char" id="egc" width="80" height="80"></canvas>
       <div><div class="greet-name" id="egn">---</div><div class="greet-sub" id="egd">---</div></div>
     </div>
+    <div id="attend-card"></div>
     <div id="retouch-section"></div>
+    <div id="edit-section"></div>
     <div class="board-title">📋 나의 업무</div>
     <div id="daily-report-section"></div>
     <div id="req-section"></div>
@@ -761,8 +858,9 @@ setInterval(async () => {
     _cache = fresh;
     // 화면 자동 갱신
     if (cu === 'admin' && document.getElementById('s-ov').classList.contains('on')) renderOv();
-    if (cu && cu !== 'admin') { renderEt(); renderRetouchStaff(); }
+    if (cu && cu !== 'admin') { renderEt(); renderRetouchStaff(); renderEditStaff(); renderAttendCard(); }
     if (cu === 'admin' && document.getElementById('s-retouch') && document.getElementById('s-retouch').classList.contains('on')) renderRetouchAdmin();
+    if (cu === 'admin' && document.getElementById('s-edit') && document.getElementById('s-edit').classList.contains('on')) renderEditAdmin();
   } catch {}
 }, 5000);
 
@@ -777,11 +875,57 @@ function gAtt(id) { return(_cache.attend||{})[id]||[]; }
 function addAtt(id,type,ip) {
   if(!_cache.attend)_cache.attend={};
   if(!_cache.attend[id])_cache.attend[id]=[];
-  _cache.attend[id].push({type,time:new Date().toISOString(),ip:ip||''});
-  if(_cache.attend[id].length>200)_cache.attend[id]=_cache.attend[id].slice(-200);
-  // 출퇴근은 즉시 서버에도 전송
-  fetch('/api/attend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({empId:id,type,ip:ip||''})}).catch(()=>{});
-  scheduleSave();
+  const now=new Date();
+  const rec={type,time:now.toISOString(),ip:ip||''};
+  const mod=now.getHours()*60+now.getMinutes();
+  if(type==='checkin')rec.late=Math.max(0,mod-(WORK_IN_H*60+WORK_IN_M));
+  if(type==='checkout')rec.early=Math.max(0,(WORK_OUT_H*60+WORK_OUT_M)-mod);
+  _cache.attend[id].push(rec);
+  if(_cache.attend[id].length>400)_cache.attend[id]=_cache.attend[id].slice(-400);
+  // 출퇴근은 즉시 서버에도 전송 (서버가 정본)
+  fetch('/api/attend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({empId:id,type,ip:ip||''})})
+    .then(()=>loadFromServer()).then(()=>{ if(cu&&cu!=='admin')renderAttendCard(); }).catch(()=>{});
+}
+
+// ── 근무시간 규정 ──
+const WORK_IN_H=9, WORK_IN_M=0;     // 출근 09:00
+const WORK_OUT_H=18, WORK_OUT_M=0;  // 퇴근 18:00
+const AUTO_OUT_H=19;                // 19시 이후 미퇴근 건은 서버가 자동 퇴근 처리
+const WORK_IN_STR=`${String(WORK_IN_H).padStart(2,'0')}:${String(WORK_IN_M).padStart(2,'0')}`;
+const WORK_OUT_STR=`${String(WORK_OUT_H).padStart(2,'0')}:${String(WORK_OUT_M).padStart(2,'0')}`;
+function hhmm(iso){ try{const d=new Date(iso);return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch{return '-';} }
+function minOfDay(iso){ const d=new Date(iso); return d.getHours()*60+d.getMinutes(); }
+// 지각 분. [출근하기] 버튼으로 찍은 기록(late 필드 보유)만 집계한다.
+// 예전 '로그인=자동 출근' 기록은 실제 출근 시각이 아니므로 null(집계 제외).
+function lateMinOf(l){ return typeof l.late==='number' ? l.late : null; }
+function fmtMin(n){ if(!n)return '0분'; const h=Math.floor(n/60),m=Math.round(n%60); return h?`${h}시간 ${m}분`:`${m}분`; }
+
+// ── 조직 구성 (소속 → 파트) ──
+const DEPTS={
+  denter:{name:'디엔터',parts:{marketing:'마케팅',content:'콘텐츠 촬영·편집'}},
+  art:{name:'아트콜렉티브',parts:{photo:'사진 파트',video:'영상 파트'}}
+};
+const DEPT_ORDER=['denter','art'];
+function deptName(d){ return (DEPTS[d]&&DEPTS[d].name)||'미배정'; }
+function partName(d,pt){ return (DEPTS[d]&&DEPTS[d].parts[pt])||''; }
+// 소속 → 파트 목록을 [{v,t}] 로
+function partOpts(d){ const ps=(DEPTS[d]&&DEPTS[d].parts)||{}; return Object.keys(ps).map(k=>({v:k,t:ps[k]})); }
+// 팀원을 소속/파트 순서대로 묶는다 (미배정은 맨 뒤)
+function groupEmps(emps){
+  const g=[];
+  DEPT_ORDER.forEach(d=>{
+    const parts=[];
+    Object.keys(DEPTS[d].parts).forEach(pt=>{
+      const list=emps.filter(e=>e.dept===d&&e.part===pt);
+      if(list.length)parts.push({part:pt,partName:DEPTS[d].parts[pt],list});
+    });
+    const noPart=emps.filter(e=>e.dept===d&&!DEPTS[d].parts[e.part]);
+    if(noPart.length)parts.push({part:'',partName:'파트 미지정',list:noPart});
+    if(parts.length)g.push({dept:d,deptName:DEPTS[d].name,parts});
+  });
+  const rest=emps.filter(e=>!DEPTS[e.dept]);
+  if(rest.length)g.push({dept:'',deptName:'미배정',parts:[{part:'',partName:'',list:rest}]});
+  return g;
 }
 
 // State
@@ -849,25 +993,9 @@ async function sLogin(){
   const isOffice = gIPs().length===0 || isOfficeIP(ip);
   if(!isOffice){ logExtAccess(emp.name, ip); }
   
-  cu=emp; 
-
-  // 오늘 이미 출근 기록이 있으면 → 재접속 처리
-  const today = new Date().toDateString();
-  const todayLogs = gAtt(emp.id).filter(l => new Date(l.time).toDateString() === today);
-  const alreadyIn = todayLogs.some(l => l.type === 'checkin' || l.type === 'return');
-  if(alreadyIn){
-    addAtt(emp.id, 'return', ip); // 재접속
-  } else {
-    addAtt(emp.id, 'checkin', ip); // 첫 출근
-  }
-
-  // 창 닫을 때 자동 퇴근
-  window._autoCheckout = () => {
-    if(cu && cu !== 'admin'){
-      navigator.sendBeacon('/api/attend', JSON.stringify({empId:cu.id, type:'checkout', ip:'auto'}));
-    }
-  };
-  window.addEventListener('beforeunload', window._autoCheckout);
+  cu=emp;
+  // 출퇴근은 로그인이 아니라 [출근하기]/[퇴근하기] 버튼으로만 기록된다.
+  // 퇴근을 안 찍은 건은 서버가 19시에 자동 퇴근 처리한다.
   document.getElementById('login-wrap').style.display='none';
   document.getElementById('es').classList.add('on');
   
@@ -887,7 +1015,9 @@ async function sLogin(){
   renderEt();
   renderDailyReport();
   renderReqSection();
+  renderAttendCard();
   renderRetouchStaff();
+  renderEditStaff();
   // 미확인 공지 있으면 모달 표시
   showNoticesForEmp(emp);
   ct=setInterval(()=>{document.getElementById('eht').textContent=new Date().toLocaleTimeString('ko-KR')},1000);
@@ -897,9 +1027,10 @@ async function sLogin(){
 function serr(m){document.getElementById('lerr').textContent=m;}
 
 function lo(){
+  // 나가기 ≠ 퇴근. 퇴근은 [퇴근하기] 버튼으로만 기록된다.
   if(cu&&cu!=='admin'){
-    addAtt(cu.id,'checkout');
-    window.removeEventListener('beforeunload', window._autoCheckout);
+    const st=todayAttend(cu.id);
+    if(st.inTime&&!st.outTime&&!confirm('아직 퇴근을 찍지 않았습니다.\n퇴근 기록 없이 나갈까요?'))return;
   }
   cu=null;sei=null;clearInterval(ct);clearInterval(et);
   document.getElementById('as').classList.remove('on');
@@ -980,7 +1111,7 @@ function setNType(t){
   document.getElementById('ntype-personal-target').style.display=t==='personal'?'block':'none';
 }
 function sat(t){
-  const tabs=['ov','mg','att','notice','approval','ip','retouch'];
+  const tabs=['ov','mg','att','notice','approval','ip','retouch','edit'];
   document.querySelectorAll('.stab').forEach((b,i)=>b.classList.toggle('on',tabs[i]===t));
   tabs.forEach(id=>{
     const el=document.getElementById(`s-${id}`);
@@ -993,6 +1124,7 @@ function sat(t){
   if(t==='notice')renderNoticeAdmin();
   if(t==='approval'){window._approvalFilter='all';renderApprovalList();}
   if(t==='retouch'){renderRetouchAdmin();}
+  if(t==='edit'){renderEditAdmin();}
 }
 // Overview
 function getSt(id){
@@ -1014,6 +1146,7 @@ function renderOv(){
     <div class="scard green-b"><div class="slabel">완료</div><div class="snum green">${dn}개</div></div>
   `;
   const g=document.getElementById('egrid');
+  g.style.display='block';
   // 자비스 고정 카드
   const JARVIS_TG = 'https://t.me/jabis4160_bot';
   const jarvisCard = `<div class="jarvis-card" onclick="window.open('${JARVIS_TG}','_blank')" title="JAVIS AI 어시스턴트">
@@ -1021,14 +1154,25 @@ function renderOv(){
     <div class="jarvis-name">JAVIS</div>
     <div class="jarvis-status">⚡ AI 어시스턴트</div>
   </div>`;
-  if(!emps.length){g.innerHTML=jarvisCard+'<div style="color:#8B95A1;font-size:14px;display:flex;align-items:center">팀원 관리 탭에서 팀원을 추가해주세요</div>';return;}
-  g.innerHTML=jarvisCard+emps.map(e=>{
+  if(!emps.length){g.innerHTML=`<div class="egrid">${jarvisCard}<div style="color:#8B95A1;font-size:14px;display:flex;align-items:center">팀원 관리 탭에서 팀원을 추가해주세요</div></div>`;return;}
+  const card=e=>{
     const tasks=gTasks(e.id),active=tasks.filter(t=>t.status!=='done').length,st=getSt(e.id);
     return`<div class="ecard ${sei===e.id?'sel':''}" onclick="op('${e.id}')">
       ${active>0?`<div class="ebadge">${active}</div>`:''}
       <div class="char-wrap"><canvas id="ec-${e.id}" width="96" height="96" style="image-rendering:pixelated;width:96px;height:96px;"></canvas>
       <div class="sdot ${st.cls}"></div></div>
       <div class="ename">${e.name}</div><div class="estatus">${st.txt}</div>
+    </div>`;
+  };
+  const groups=groupEmps(emps);
+  g.innerHTML=`<div class="egrid" style="margin-bottom:28px">${jarvisCard}</div>`+groups.map(gr=>{
+    const total=gr.parts.reduce((n,pp)=>n+pp.list.length,0);
+    return`<div class="dept-block">
+      <div class="dept-hd"><div class="dept-name">${gr.deptName}</div><div class="dept-cnt">${total}명</div></div>
+      ${gr.parts.map(pp=>`
+        ${pp.partName?`<div class="part-hd p-${pp.part||'none'}">${pp.partName}</div>`:''}
+        <div class="egrid">${pp.list.map(card).join('')}</div>
+      `).join('')}
     </div>`;
   }).join('');
   emps.forEach(e=>{const c=document.getElementById(`ec-${e.id}`);if(c)dm(c,PAL[e.pi||0]);});
@@ -1037,7 +1181,7 @@ function renderOv(){
 // Manage
 function addEmp(){
   const emps=gEmps();
-  emps.push({id:'e'+Date.now(),name:'',code:'',pi:emps.length%PAL.length});
+  emps.push({id:'e'+Date.now(),name:'',code:'',pi:emps.length%PAL.length,dept:'',part:'',retouch:false,edit:false,goal:0});
   sEmps(emps);renderMg();
 }
 function saveEmp(id){
@@ -1048,8 +1192,16 @@ function saveEmp(id){
   if(!code){toast('접속 코드를 입력해주세요');return;}
   if(emps.some((e,i)=>i!==idx&&e.code===code)){toast('이미 사용 중인 코드입니다');return;}
   const rtEl=document.getElementById(`mr-${id}`);
+  const edEl=document.getElementById(`me-${id}`);
+  const dpEl=document.getElementById(`md-${id}`);
+  const ptEl=document.getElementById(`mp-${id}`);
+  const glEl=document.getElementById(`mg-${id}`);
   emps[idx].name=name;emps[idx].code=code;
   emps[idx].retouch=rtEl?rtEl.checked:!!emps[idx].retouch;
+  emps[idx].edit=edEl?edEl.checked:!!emps[idx].edit;
+  if(dpEl)emps[idx].dept=dpEl.value;
+  if(ptEl)emps[idx].part=DEPTS[emps[idx].dept]&&DEPTS[emps[idx].dept].parts[ptEl.value]?ptEl.value:'';
+  if(glEl)emps[idx].goal=Math.max(0,parseInt(glEl.value,10)||0);
   sEmps(emps);
   renderMg();renderOv();toast(`${name} 저장 완료`);
 }
@@ -1060,9 +1212,23 @@ function delEmp(id){
   if(sei===id){sei=null;document.getElementById('tpanel').style.display='none';}
   renderMg();renderOv();toast('삭제 완료');
 }
+// 소속 변경 시 파트 select 를 다시 채운다
+function onDeptChange(id){
+  const dp=document.getElementById(`md-${id}`),pt=document.getElementById(`mp-${id}`);
+  if(!dp||!pt)return;
+  const opts=partOpts(dp.value);
+  pt.innerHTML='<option value="">-- 파트 선택 --</option>'+opts.map(o=>`<option value="${o.v}">${o.t}</option>`).join('');
+  pt.disabled=!opts.length;
+}
 function renderMg(){
   const emps=gEmps(),ml=document.getElementById('mlist');
   if(!emps.length){ml.innerHTML='<div style="font-size:14px;color:#8B95A1;padding:16px">등록된 팀원이 없습니다</div>';return;}
+  const deptOpts=e=>['<option value="">-- 소속 선택 --</option>']
+    .concat(DEPT_ORDER.map(d=>`<option value="${d}" ${e.dept===d?'selected':''}>${DEPTS[d].name}</option>`)).join('');
+  const partSel=e=>{
+    const opts=partOpts(e.dept);
+    return `<option value="">-- 파트 선택 --</option>`+opts.map(o=>`<option value="${o.v}" ${e.part===o.v?'selected':''}>${o.t}</option>`).join('');
+  };
   ml.innerHTML=emps.map(e=>`
     <div class="mrow">
       <canvas id="mc2-${e.id}" width="64" height="64" class="mchar" style="width:64px;height:64px;image-rendering:pixelated;"></canvas>
@@ -1072,8 +1238,20 @@ function renderMg(){
             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
         <div class="mfield"><div class="mfl">접속 코드</div>
           <input type="text" class="minput code" id="mc-${e.id}" value="${e.code}" placeholder="예: abc123"
-            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en">
-          <label class="rt-chk"><input type="checkbox" id="mr-${e.id}" ${e.retouch?'checked':''}>보정 기록 사용</label>
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en"></div>
+        <div class="mfield"><div class="mfl">소속</div>
+          <select class="msel" id="md-${e.id}" onchange="onDeptChange('${e.id}')">${deptOpts(e)}</select></div>
+        <div class="mfield"><div class="mfl">파트</div>
+          <select class="msel" id="mp-${e.id}" ${partOpts(e.dept).length?'':'disabled'}>${partSel(e)}</select></div>
+        <div class="mfield" style="grid-column:1/-1">
+          <div class="mfl">기록 권한 / 일일 할당량</div>
+          <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+            <label class="rt-chk" style="margin-top:0"><input type="checkbox" id="mr-${e.id}" ${e.retouch?'checked':''}>보정 기록 (사진)</label>
+            <label class="rt-chk" style="margin-top:0"><input type="checkbox" id="me-${e.id}" ${e.edit?'checked':''}>편집 기록 (영상)</label>
+            <label class="rt-chk" style="margin-top:0">보정 일일 할당량
+              <input type="number" min="0" class="minput" id="mg-${e.id}" value="${e.goal||''}" placeholder="0"
+                style="width:80px;padding:6px 8px;font-size:13px;" autocomplete="off"> 장</label>
+          </div>
         </div>
       </div>
       <div class="mbtns">
@@ -1412,26 +1590,121 @@ function confirmNotices(){
 
 // Util
 
+// ── 출퇴근 (출근/퇴근 버튼) ──
+// 오늘 기록 요약: 최초 출근 / 마지막 퇴근 / 지각분 / 현재 근무중 여부
+function todayAttend(id){
+  const today=new Date().toDateString();
+  const logs=gAtt(id).filter(l=>new Date(l.time).toDateString()===today);
+  const ins=logs.filter(l=>l.type==='checkin'||l.type==='return');
+  const outs=logs.filter(l=>l.type==='checkout');
+  const inLog=ins[0]||null, outLog=outs[outs.length-1]||null;
+  const last=logs[logs.length-1]||null;
+  const working=!!last&&(last.type==='checkin'||last.type==='return');
+  const late=(inLog?lateMinOf(inLog):0)||0;
+  const early=outLog?(typeof outLog.early==='number'?outLog.early:Math.max(0,(WORK_OUT_H*60+WORK_OUT_M)-minOfDay(outLog.time))):0;
+  let workedMin=0;
+  if(inLog)workedMin=Math.max(0,((outLog?new Date(outLog.time):new Date())-new Date(inLog.time))/60000);
+  return {logs,inLog,outLog,working,late,early,workedMin,
+    inTime:inLog?hhmm(inLog.time):'',outTime:outLog?hhmm(outLog.time):'',
+    autoOut:!!(outLog&&outLog.auto)};
+}
+
+function doCheckIn(){
+  if(!cu||cu==='admin')return;
+  const st=todayAttend(cu.id);
+  if(st.working){toast('이미 출근 상태입니다');return;}
+  const type=st.inLog?'return':'checkin';
+  const now=new Date();
+  const late=Math.max(0,(now.getHours()*60+now.getMinutes())-(WORK_IN_H*60+WORK_IN_M));
+  if(type==='checkin'&&late>0&&!confirm(`현재 시각 ${hhmm(now.toISOString())} — 출근 시각 ${WORK_IN_STR} 기준 ${fmtMin(late)} 지각으로 기록됩니다.\n출근 처리할까요?`))return;
+  addAtt(cu.id,type,myCurrentIP);
+  renderAttendCard();
+  toast(type==='checkin'?(late>0?`출근 기록 (지각 ${fmtMin(late)})`:'출근 기록 완료 👍'):'재출근 기록 완료');
+}
+
+function doCheckOut(){
+  if(!cu||cu==='admin')return;
+  const st=todayAttend(cu.id);
+  if(!st.inLog){toast('출근 기록이 없습니다');return;}
+  if(!st.working){toast('이미 퇴근 상태입니다');return;}
+  const now=new Date();
+  const early=Math.max(0,(WORK_OUT_H*60+WORK_OUT_M)-(now.getHours()*60+now.getMinutes()));
+  if(early>0&&!confirm(`퇴근 시각 ${WORK_OUT_STR} 보다 ${fmtMin(early)} 이릅니다.\n퇴근 처리할까요?`))return;
+  addAtt(cu.id,'checkout',myCurrentIP);
+  renderAttendCard();
+  toast('퇴근 기록 완료. 수고하셨습니다 🙌');
+}
+
+function renderAttendCard(){
+  const box=document.getElementById('attend-card');
+  if(!box||!cu||cu==='admin')return;
+  const st=todayAttend(cu.id);
+  const inCls=!st.inLog?'none':(st.late>0?'late':'ok');
+  const stateTxt=st.working?'근무 중':(st.outLog?'퇴근':'출근 전');
+  const stateColor=st.working?'var(--green)':(st.outLog?'var(--g600)':'var(--g400)');
+  box.innerHTML=`
+  <div class="ac">
+    <div class="ac-top">
+      <div class="ac-title">🕘 오늘 출퇴근 <span style="font-weight:700;font-size:13px;color:${stateColor}">· ${stateTxt}</span></div>
+      <div class="ac-work">근무시간 ${WORK_IN_STR} ~ ${WORK_OUT_STR}</div>
+    </div>
+    <div class="ac-row">
+      <div class="ac-box"><div class="ac-l">출근</div>
+        <div class="ac-v ${inCls}">${st.inTime||'--:--'}</div></div>
+      <div class="ac-box"><div class="ac-l">퇴근</div>
+        <div class="ac-v ${st.outLog?'':'none'}">${st.outTime||'--:--'}${st.autoOut?' <span style="font-size:11px;color:var(--g500);font-weight:600">자동</span>':''}</div></div>
+      <div class="ac-box"><div class="ac-l">근무 시간</div>
+        <div class="ac-v ${st.inLog?'':'none'}">${st.inLog?fmtMin(st.workedMin):'--'}</div></div>
+    </div>
+    <div class="ac-btns">
+      <button class="ac-btn ac-in" onclick="doCheckIn()" ${st.working?'disabled':''}>${st.outLog&&!st.working?'재출근':'출근하기'}</button>
+      <button class="ac-btn ac-out" onclick="doCheckOut()" ${st.working?'':'disabled'}>퇴근하기</button>
+    </div>
+    ${st.late>0?`<div class="ac-warn">⚠️ 오늘 ${fmtMin(st.late)} 지각으로 기록되었습니다 (출근 ${WORK_IN_STR} 기준)</div>`:''}
+    <div class="ac-note">
+      · 출근·퇴근은 반드시 버튼을 눌러 직접 기록해주세요. 로그인/로그아웃은 기록되지 않습니다.<br>
+      · 퇴근을 누르지 않은 경우 ${AUTO_OUT_H}시에 자동 퇴근 처리됩니다.<br>
+      · 출근 시각(${WORK_IN_STR}) 미준수는 별도로 집계되어 관리됩니다.
+    </div>
+  </div>`;
+}
+
 // ── 보정 기록 시스템 ──
 let rtDate = new Date();
-let rtMode = 'reg';
+let rtMode = 'reg';   // reg=작업일 기준, wed=예식일 기준
+let rtView = 'day';   // day=일별, month=월 누계
 let rtOpen = {};
+
+function todayStr(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+// 기록에 남은 empId 가 현재 팀원 목록에 없으면 같은 이름의 팀원 ID 로 맞춰준다
+// (팀원을 지웠다 다시 만든 경우 같은 사람이 두 줄로 갈라지는 것 방지)
+function resolveEmpId(r){
+  const emps=gEmps();
+  if(emps.some(e=>e.id===r.empId))return r.empId;
+  const byName=emps.find(e=>e.name&&e.name===(r.empName||'').trim());
+  return byName?byName.id:r.empId;
+}
+function isMineRec(r){ return cu&&cu!=='admin'&&resolveEmpId(r)===cu.id; }
 
 function gRetouch(){ return _cache.retouch||[]; }
 function myEmp(){ if(!cu||cu==='admin')return null; return gEmps().find(e=>e.id===cu.id)||cu; }
 function canRetouch(){ const e=myEmp(); return !!(e&&e.retouch); }
-function rtKeyOf(r){ return rtMode==='wed' ? (r.wdate||'') : (r.createdAt||'').slice(0,10); }
+// 작업일: 신규 기록은 workDate, 예전 기록은 등록일로 대체
+function rtWorkDate(r){ return r.workDate || (r.createdAt||'').slice(0,10); }
+function rtKeyOf(r){ return rtMode==='wed' ? (r.wdate||'') : rtWorkDate(r); }
 function rtMonthKey(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
 
 function addRetouchRec(){
+  const wk=document.getElementById('rt-workdate').value;
   const wd=document.getElementById('rt-wdate').value;
   const bride=document.getElementById('rt-bride').value.trim();
   const cnt=parseInt(document.getElementById('rt-count').value,10);
+  if(!wk){toast('작업일을 선택해주세요');return;}
   if(!wd){toast('예식일자를 선택해주세요');return;}
   if(!bride){toast('신부 성함을 입력해주세요');return;}
   if(!cnt||cnt<1){toast('보정 장수를 입력해주세요');return;}
   const emp=myEmp();
-  const rec={id:'r'+Date.now(),empId:emp.id,empName:emp.name,wdate:wd,bride:bride,count:cnt,createdAt:new Date().toISOString()};
+  const rec={id:'r'+Date.now(),empId:emp.id,empName:emp.name,workDate:wk,wdate:wd,bride:bride,count:cnt,createdAt:new Date().toISOString()};
   if(!_cache.retouch)_cache.retouch=[];
   _cache.retouch.unshift(rec);
   fetch('/api/retouch',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -1460,7 +1733,9 @@ function renderRetouchStaff(){
     box.innerHTML=`
     <div class="rt-card">
       <div class="rt-card-title">🎞️ 보정 기록 입력</div>
-      <div class="rt-form">
+      <div class="rt-form" style="grid-template-columns:1fr 1fr 1.1fr .7fr auto;">
+        <div class="rt-f"><div class="rt-fl">작업일</div>
+          <input type="date" class="rt-inp" id="rt-workdate" value="${todayStr()}"></div>
         <div class="rt-f"><div class="rt-fl">예식일자</div>
           <input type="date" class="rt-inp" id="rt-wdate"></div>
         <div class="rt-f"><div class="rt-fl">신부 성함</div>
@@ -1471,7 +1746,7 @@ function renderRetouchStaff(){
       </div>
     </div>
     <div class="rt-card">
-      <div class="rt-card-title">📊 이번 달 내 보정 <span id="rt-my-month" style="color:var(--g500);font-weight:600"></span></div>
+      <div class="rt-card-title">📊 내 보정 현황 <span id="rt-my-month" style="color:var(--g500);font-weight:600"></span></div>
       <div id="rt-my-wrap"></div>
     </div>`;
     box.dataset.built='1';
@@ -1482,22 +1757,38 @@ function renderRetouchStaff(){
 function renderRetouchList(){
   const wrap=document.getElementById('rt-my-wrap');
   if(!wrap||!cu||cu==='admin')return;
-  const mk=rtMonthKey(new Date());
-  const mine=gRetouch().filter(r=>r.empId===cu.id);
-  const thisMonth=mine.filter(r=>(r.createdAt||'').slice(0,7)===mk);
+  const emp=myEmp();
+  const goal=(emp&&emp.goal)||0;
+  const mk=rtMonthKey(new Date()), td=todayStr();
+  const mine=gRetouch().filter(isMineRec);
+  const thisMonth=mine.filter(r=>rtWorkDate(r).slice(0,7)===mk);
+  const todayRecs=mine.filter(r=>rtWorkDate(r)===td);
+  const todayCnt=todayRecs.reduce((s,r)=>s+(r.count||0),0);
   const total=thisMonth.reduce((s,r)=>s+(r.count||0),0);
+  // 이번 달 작업일수 (기록이 있는 날)
+  const days=new Set(thisMonth.map(r=>rtWorkDate(r)).filter(Boolean)).size;
+  const avg=days?Math.round(total/days):0;
   const recent=mine.slice(0,20);
   const mEl=document.getElementById('rt-my-month');
   if(mEl)mEl.textContent=`(${mk})`;
+  const goalCls=goal?(todayCnt>=goal?'d-ok':'d-under'):'d-none';
   wrap.innerHTML=`
       <div class="rt-sum">
-        <div class="rt-sum-box"><div class="rt-sum-l">총 장수</div><div class="rt-sum-v">${total.toLocaleString()}장</div></div>
+        <div class="rt-sum-box" style="background:${goal&&todayCnt<goal?'var(--red-l)':'var(--green-l)'}">
+          <div class="rt-sum-l">오늘 (${td.slice(5)})</div>
+          <div class="rt-sum-v ${goalCls}" style="color:${goal?(todayCnt>=goal?'#0A9E50':'#D6303E'):'var(--blue)'}">${todayCnt.toLocaleString()}장${goal?` / ${goal}장`:''}</div>
+        </div>
+        <div class="rt-sum-box"><div class="rt-sum-l">이번 달 총 장수</div><div class="rt-sum-v">${total.toLocaleString()}장</div></div>
+        <div class="rt-sum-box"><div class="rt-sum-l">일 평균</div><div class="rt-sum-v">${avg.toLocaleString()}장</div></div>
         <div class="rt-sum-box"><div class="rt-sum-l">건수</div><div class="rt-sum-v">${thisMonth.length}건</div></div>
       </div>
+      ${goal?`<div class="goal-note">일일 할당량 ${goal}장 기준 · 오늘 ${todayCnt>=goal?`달성 ✅ (+${todayCnt-goal}장)`:`${goal-todayCnt}장 남음`}</div>`:''}
+      <div style="height:14px"></div>
       ${recent.length?recent.map(r=>`
         <div class="rt-item">
-          <span class="rt-date">${r.wdate||'-'}</span>
+          <span class="rt-date">${rtWorkDate(r)||'-'}</span>
           <span class="rt-bride">${r.bride}</span>
+          <span style="font-size:12px;color:var(--g500)">예식 ${r.wdate||'-'}</span>
           <span class="rt-cnt">${(r.count||0).toLocaleString()}장</span>
           <button class="rt-del" onclick="delRetouchRec('${r.id}')" title="삭제">✕</button>
         </div>`).join(''):'<div class="rt-empty">아직 등록된 기록이 없습니다</div>'}`;
@@ -1509,6 +1800,16 @@ function setRtMode(m){
   document.getElementById('rtmode-wed').classList.toggle('on',m==='wed');
   renderRetouchAdmin();
 }
+function setRtView(v){
+  rtView=v;
+  document.getElementById('rtview-day').classList.toggle('on',v==='day');
+  document.getElementById('rtview-month').classList.toggle('on',v==='month');
+  const h=document.getElementById('rt-help');
+  if(h)h.textContent = v==='day'
+    ? '날짜별 보정 장수입니다. 일일 할당량은 팀원 관리 탭에서 설정합니다'
+    : '팀원 행을 누르면 건별 내역이 펼쳐집니다';
+  renderRetouchAdmin();
+}
 function rtMonth(delta){
   rtDate=new Date(rtDate.getFullYear(),rtDate.getMonth()+delta,1);
   renderRetouchAdmin();
@@ -1518,6 +1819,17 @@ function rtToggle(empId){
   renderRetouchAdmin();
 }
 
+// 보정 담당 팀원 (권한 있거나 해당 달에 기록이 있는 사람)
+function rtEmpsFor(rows){
+  const emps=gEmps().filter(e=>e.name);
+  const withRec=new Set(rows.map(resolveEmpId));
+  const list=emps.filter(e=>e.retouch||withRec.has(e.id));
+  // 현재 팀원 목록에 없는(삭제된) 팀원의 기록도 한 줄로 살려둔다
+  rows.forEach(r=>{ const id=resolveEmpId(r);
+    if(!list.some(e=>e.id===id)) list.push({id,name:(r.empName||'(삭제된 팀원)')+' (퇴사)',goal:0}); });
+  return list;
+}
+
 function renderRetouchAdmin(){
   const mk=rtMonthKey(rtDate);
   const tEl=document.getElementById('rt-month-title');
@@ -1525,16 +1837,95 @@ function renderRetouchAdmin(){
   const rows=gRetouch().filter(r=>rtKeyOf(r).slice(0,7)===mk);
   const wrap=document.getElementById('rt-admin-wrap');
   if(!wrap)return;
+  if(rtView==='day') renderRetouchDaily(rows,wrap);
+  else renderRetouchMonthly(rows,wrap);
+}
+
+// 일별: 행=날짜, 열=팀원
+function renderRetouchDaily(rows,wrap){
+  const y=rtDate.getFullYear(), m=rtDate.getMonth();
+  const dim=new Date(y,m+1,0).getDate();
+  const emps=rtEmpsFor(rows);
+  if(!emps.length){
+    wrap.innerHTML='<div class="rt-card"><div class="rt-empty">보정 기록을 사용하는 팀원이 없습니다. 팀원 관리 탭에서 “보정 기록 (사진)”을 켜주세요</div></div>';
+    return;
+  }
+  // 날짜 → empId → 장수
+  const cell={};
+  rows.forEach(r=>{
+    const k=rtKeyOf(r); if(!k)return;
+    if(!cell[k])cell[k]={};
+    const eid=resolveEmpId(r);
+    cell[k][eid]=(cell[k][eid]||0)+(r.count||0);
+  });
+  const td=todayStr();
+  const WD=['일','월','화','수','목','금','토'];
+  const colTot={}, colDays={};
+  let body='';
+  for(let d=1;d<=dim;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const day=new Date(y,m,d).getDay();
+    const c=cell[ds]||{};
+    const rowTot=emps.reduce((s,e)=>s+(c[e.id]||0),0);
+    body+=`<tr class="${ds===td?'d-today':''}">
+      <td class="d-date">${String(m+1).padStart(2,'0')}/${String(d).padStart(2,'0')} (${WD[day]})</td>
+      ${emps.map(e=>{
+        const v=c[e.id]||0;
+        colTot[e.id]=(colTot[e.id]||0)+v;
+        if(v>0)colDays[e.id]=(colDays[e.id]||0)+1;
+        const g=e.goal||0;
+        const cls=v===0?'d-zero':(g?(v>=g?'d-ok':'d-under'):'d-none');
+        return `<td class="${cls}">${v?v.toLocaleString():'·'}</td>`;
+      }).join('')}
+      <td style="font-weight:700">${rowTot?rowTot.toLocaleString():'·'}</td>
+    </tr>`;
+  }
+  const grand=emps.reduce((s,e)=>s+(colTot[e.id]||0),0);
+  wrap.innerHTML=`
+    <div class="rt-card rt-scroll" style="padding:0;overflow-x:auto;">
+      <table class="rt-day-tbl">
+        <thead>
+          <tr>
+            <th style="text-align:left">날짜</th>
+            ${emps.map(e=>`<th>${e.name}${e.goal?`<div style="font-weight:600;color:var(--g500);font-size:11px;margin-top:2px">할당 ${e.goal}장</div>`:''}</th>`).join('')}
+            <th>합계</th>
+          </tr>
+        </thead>
+        <tbody>${body||`<tr><td colspan="${emps.length+2}" class="rt-empty">이 달에 등록된 보정 기록이 없습니다</td></tr>`}</tbody>
+        <tfoot>
+          <tr>
+            <td class="d-date">월 합계</td>
+            ${emps.map(e=>`<td>${(colTot[e.id]||0).toLocaleString()}</td>`).join('')}
+            <td>${grand.toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td class="d-date" style="font-weight:600;color:var(--g500)">작업일수 / 일평균</td>
+            ${emps.map(e=>{
+              const dd=colDays[e.id]||0, tt=colTot[e.id]||0;
+              return `<td style="font-weight:600;color:var(--g600)">${dd}일 / ${dd?Math.round(tt/dd).toLocaleString():0}장</td>`;
+            }).join('')}
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="goal-note">· 초록 = 일일 할당량 달성 / 빨강 = 미달 · 할당량 미설정 팀원은 검정으로 표시됩니다</div>`;
+}
+
+// 월 누계: 기존 팀원별 표
+function renderRetouchMonthly(rows,wrap){
   if(!rows.length){
     wrap.innerHTML='<div class="rt-card"><div class="rt-empty">이 달에 등록된 보정 기록이 없습니다</div></div>';
     return;
   }
   const byEmp={};
   rows.forEach(r=>{
-    if(!byEmp[r.empId])byEmp[r.empId]={name:r.empName||'(이름없음)',cnt:0,total:0,list:[]};
-    byEmp[r.empId].cnt++;
-    byEmp[r.empId].total+=(r.count||0);
-    byEmp[r.empId].list.push(r);
+    const eid=resolveEmpId(r);
+    if(!byEmp[eid])byEmp[eid]={name:(gEmps().find(e=>e.id===eid)||{}).name||r.empName||'(이름없음)',cnt:0,total:0,list:[],days:new Set()};
+    byEmp[eid].cnt++;
+    byEmp[eid].total+=(r.count||0);
+    byEmp[eid].list.push(r);
+    if(rtWorkDate(r))byEmp[eid].days.add(rtWorkDate(r));
   });
   const grand=rows.reduce((s,r)=>s+(r.count||0),0);
   const ids=Object.keys(byEmp).sort((a,b)=>byEmp[b].total-byEmp[a].total);
@@ -1546,19 +1937,304 @@ function renderRetouchAdmin(){
     </div>
     <div class="rt-card" style="padding:0;overflow:hidden;">
       <table class="rt-tbl">
-        <thead><tr><th>팀원</th><th style="text-align:right">건수</th><th style="text-align:right">총 장수</th></tr></thead>
+        <thead><tr><th>팀원</th><th style="text-align:right">건수</th><th style="text-align:right">작업일수</th><th style="text-align:right">일평균</th><th style="text-align:right">총 장수</th></tr></thead>
         <tbody>
         ${ids.map(id=>{
           const e=byEmp[id];
+          const dd=e.days.size;
           const detail=e.list.slice().sort((a,b)=>(rtKeyOf(a)<rtKeyOf(b)?1:-1));
           return `<tr class="rt-emp-row" onclick="rtToggle('${id}')">
             <td><b>${rtOpen[id]?'▾':'▸'} ${e.name}</b></td>
             <td style="text-align:right">${e.cnt}건</td>
+            <td style="text-align:right">${dd}일</td>
+            <td style="text-align:right">${dd?Math.round(e.total/dd).toLocaleString():0}장</td>
             <td style="text-align:right;font-weight:700;color:var(--blue)">${e.total.toLocaleString()}장</td>
           </tr>
           ${rtOpen[id]?detail.map(r=>`<tr class="rt-detail">
-            <td colspan="3">${r.wdate||'-'} · ${r.bride} · <b>${(r.count||0).toLocaleString()}장</b>
-              <span style="color:var(--g400);margin-left:8px;font-size:12px">등록 ${(r.createdAt||'').slice(0,10)}</span></td>
+            <td colspan="5">작업 ${rtWorkDate(r)||'-'} · 예식 ${r.wdate||'-'} · ${r.bride} · <b>${(r.count||0).toLocaleString()}장</b></td>
+          </tr>`).join(''):''}`;
+        }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ── 영상 편집 기록 시스템 ──
+let edDate = new Date();
+let edView = 'day';
+let edProd = '1cam';
+let edOpen = {};
+
+function gEditLog(){ return _cache.editlog||[]; }
+function canEdit(){ const e=myEmp(); return !!(e&&e.edit); }
+function edWorkDate(r){ return r.workDate || (r.createdAt||'').slice(0,10); }
+// 상품 기준 완료 여부: 1인2캠은 하이라이트+챕터 둘 다, 1인1캠은 하나 이상
+function edDone(r){ return r.product==='2cam' ? (!!r.highlight && !!r.chapter) : (!!r.highlight || !!r.chapter); }
+function edProdName(p){ return p==='2cam'?'1인2캠':'1인1캠'; }
+
+function setEdProd(p){
+  edProd=p;
+  const a=document.getElementById('ed-prod-1cam'),b=document.getElementById('ed-prod-2cam');
+  if(a)a.classList.toggle('on',p==='1cam');
+  if(b)b.classList.toggle('on',p==='2cam');
+}
+
+function addEditRec(){
+  const wk=document.getElementById('ed-workdate').value;
+  const wd=document.getElementById('ed-wdate').value;
+  const groom=document.getElementById('ed-groom').value.trim();
+  const bride=document.getElementById('ed-bride').value.trim();
+  const hi=document.getElementById('ed-hi').checked;
+  const ch=document.getElementById('ed-ch').checked;
+  if(!wk){toast('작업일을 선택해주세요');return;}
+  if(!wd){toast('예식일자를 선택해주세요');return;}
+  if(!groom&&!bride){toast('신랑 또는 신부 성함을 입력해주세요');return;}
+  if(!hi&&!ch){toast('하이라이트 또는 챕터별 중 하나 이상 체크해주세요');return;}
+  const emp=myEmp();
+  const rec={id:'v'+Date.now(),empId:emp.id,empName:emp.name,workDate:wk,wdate:wd,
+    groom:groom,bride:bride,product:edProd,highlight:hi,chapter:ch,createdAt:new Date().toISOString()};
+  if(!_cache.editlog)_cache.editlog=[];
+  _cache.editlog.unshift(rec);
+  fetch('/api/editlog',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'add',rec})}).catch(()=>{});
+  document.getElementById('ed-groom').value='';
+  document.getElementById('ed-bride').value='';
+  document.getElementById('ed-hi').checked=false;
+  document.getElementById('ed-ch').checked=false;
+  document.getElementById('ed-groom').focus();
+  renderEditList();
+  toast(`${bride||groom} 팀 ${edProdName(edProd)} 등록 완료`);
+}
+
+// 목록에서 체크박스를 바로 토글 (나중에 나머지 한 편 끝냈을 때)
+function toggleEditFlag(id,field){
+  const list=gEditLog(), i=list.findIndex(r=>r.id===id);
+  if(i<0)return;
+  const rec={...list[i]};
+  rec[field]=!rec[field];
+  if(!rec.highlight&&!rec.chapter){toast('최소 한 항목은 체크되어 있어야 합니다');renderEditList();return;}
+  list[i]=rec; _cache.editlog=list;
+  fetch('/api/editlog',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'upd',rec})}).catch(()=>{});
+  renderEditList();
+}
+
+function delEditRec(id){
+  if(!confirm('이 기록을 삭제할까요?'))return;
+  _cache.editlog=gEditLog().filter(r=>r.id!==id);
+  fetch('/api/editlog',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'del',id})}).catch(()=>{});
+  renderEditList();
+  toast('삭제 완료');
+}
+
+function renderEditStaff(){
+  const box=document.getElementById('edit-section');
+  if(!box||!cu||cu==='admin')return;
+  if(!canEdit()){ box.innerHTML=''; box.dataset.built=''; return; }
+  if(box.dataset.built!=='1'){
+    box.innerHTML=`
+    <div class="rt-card">
+      <div class="rt-card-title">🎬 영상 편집 기록 입력</div>
+      <div class="ed-form">
+        <div class="rt-f"><div class="rt-fl">작업일</div>
+          <input type="date" class="rt-inp" id="ed-workdate" value="${todayStr()}"></div>
+        <div class="rt-f"><div class="rt-fl">예식일자</div>
+          <input type="date" class="rt-inp" id="ed-wdate"></div>
+        <div class="rt-f"><div class="rt-fl">신랑 성함</div>
+          <input type="text" class="rt-inp" id="ed-groom" placeholder="예: 박준영" autocomplete="off"></div>
+        <div class="rt-f"><div class="rt-fl">신부 성함</div>
+          <input type="text" class="rt-inp" id="ed-bride" placeholder="예: 김지영" autocomplete="off"></div>
+      </div>
+      <div class="ed-form2">
+        <div class="rt-f" style="gap:6px">
+          <div class="rt-fl">상품</div>
+          <div class="ed-prod">
+            <button class="ed-prod-btn on" id="ed-prod-1cam" onclick="setEdProd('1cam')">1인1캠</button>
+            <button class="ed-prod-btn" id="ed-prod-2cam" onclick="setEdProd('2cam')">1인2캠</button>
+          </div>
+        </div>
+        <div class="rt-f" style="gap:6px">
+          <div class="rt-fl">완료 항목</div>
+          <div class="ed-chks">
+            <label class="ed-chk"><input type="checkbox" id="ed-hi">하이라이트</label>
+            <label class="ed-chk"><input type="checkbox" id="ed-ch">챕터별 (식전·식중·식후)</label>
+          </div>
+        </div>
+        <button class="rt-sub" onclick="addEditRec()" style="margin-left:auto">등록</button>
+      </div>
+      <div class="goal-note">1인1캠 = 하이라이트 또는 챕터별 중 1종 · 1인2캠 = 하이라이트 + 챕터별 모두 완료해야 “완료”로 집계됩니다</div>
+    </div>
+    <div class="rt-card">
+      <div class="rt-card-title">📊 내 편집 현황 <span id="ed-my-month" style="color:var(--g500);font-weight:600"></span></div>
+      <div id="ed-my-wrap"></div>
+    </div>`;
+    box.dataset.built='1';
+    setEdProd('1cam');
+  }
+  renderEditList();
+}
+
+function renderEditList(){
+  const wrap=document.getElementById('ed-my-wrap');
+  if(!wrap||!cu||cu==='admin')return;
+  const mk=rtMonthKey(new Date()), td=todayStr();
+  const mine=gEditLog().filter(isMineRec);
+  const thisMonth=mine.filter(r=>edWorkDate(r).slice(0,7)===mk);
+  const todayRecs=mine.filter(r=>edWorkDate(r)===td);
+  const days=new Set(thisMonth.map(r=>edWorkDate(r)).filter(Boolean)).size;
+  const mEl=document.getElementById('ed-my-month');
+  if(mEl)mEl.textContent=`(${mk})`;
+  const recent=mine.slice(0,20);
+  wrap.innerHTML=`
+    <div class="rt-sum">
+      <div class="rt-sum-box"><div class="rt-sum-l">오늘 (${td.slice(5)})</div><div class="rt-sum-v">${todayRecs.length}팀</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">이번 달</div><div class="rt-sum-v">${thisMonth.length}팀</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">작업일수 / 일평균</div><div class="rt-sum-v">${days}일 / ${days?(thisMonth.length/days).toFixed(1):0}팀</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">이번 달 완료</div><div class="rt-sum-v">${thisMonth.filter(edDone).length}팀</div></div>
+    </div>
+    <div style="height:14px"></div>
+    ${recent.length?recent.map(r=>`
+      <div class="ed-item">
+        <span class="rt-date">${edWorkDate(r)||'-'}</span>
+        <span class="ed-couple">${[r.groom,r.bride].filter(Boolean).join(' ♥ ')}</span>
+        <span style="font-size:12px;color:var(--g500)">예식 ${r.wdate||'-'}</span>
+        <span class="pill p-${r.product||'1cam'}">${edProdName(r.product)}</span>
+        <label class="ed-chk" style="font-size:12px"><input type="checkbox" ${r.highlight?'checked':''} onchange="toggleEditFlag('${r.id}','highlight')">하이라이트</label>
+        <label class="ed-chk" style="font-size:12px"><input type="checkbox" ${r.chapter?'checked':''} onchange="toggleEditFlag('${r.id}','chapter')">챕터별</label>
+        <span class="pill ${edDone(r)?'ok':'part'}">${edDone(r)?'완료':'진행중'}</span>
+        <button class="rt-del" onclick="delEditRec('${r.id}')" title="삭제">✕</button>
+      </div>`).join(''):'<div class="rt-empty">아직 등록된 기록이 없습니다</div>'}`;
+}
+
+function setEdView(v){
+  edView=v;
+  document.getElementById('edview-day').classList.toggle('on',v==='day');
+  document.getElementById('edview-month').classList.toggle('on',v==='month');
+  renderEditAdmin();
+}
+function edMonth(delta){
+  edDate=new Date(edDate.getFullYear(),edDate.getMonth()+delta,1);
+  renderEditAdmin();
+}
+function edToggle(id){ edOpen[id]=!edOpen[id]; renderEditAdmin(); }
+
+function edEmpsFor(rows){
+  const emps=gEmps().filter(e=>e.name);
+  const withRec=new Set(rows.map(resolveEmpId));
+  const list=emps.filter(e=>e.edit||withRec.has(e.id));
+  rows.forEach(r=>{ const id=resolveEmpId(r);
+    if(!list.some(e=>e.id===id)) list.push({id,name:(r.empName||'(삭제된 팀원)')+' (퇴사)'}); });
+  return list;
+}
+
+function renderEditAdmin(){
+  const mk=rtMonthKey(edDate);
+  const tEl=document.getElementById('ed-month-title');
+  if(tEl)tEl.textContent=`${edDate.getFullYear()}년 ${edDate.getMonth()+1}월`;
+  const rows=gEditLog().filter(r=>edWorkDate(r).slice(0,7)===mk);
+  const wrap=document.getElementById('ed-admin-wrap');
+  if(!wrap)return;
+  if(edView==='day') renderEditDaily(rows,wrap);
+  else renderEditMonthly(rows,wrap);
+}
+
+function renderEditDaily(rows,wrap){
+  const y=edDate.getFullYear(), m=edDate.getMonth();
+  const dim=new Date(y,m+1,0).getDate();
+  const emps=edEmpsFor(rows);
+  if(!emps.length){
+    wrap.innerHTML='<div class="rt-card"><div class="rt-empty">편집 기록을 사용하는 팀원이 없습니다. 팀원 관리 탭에서 “편집 기록 (영상)”을 켜주세요</div></div>';
+    return;
+  }
+  const cell={};
+  rows.forEach(r=>{
+    const k=edWorkDate(r); if(!k)return;
+    if(!cell[k])cell[k]={};
+    const eid=resolveEmpId(r);
+    if(!cell[k][eid])cell[k][eid]=[];
+    cell[k][eid].push(r);
+  });
+  const td=todayStr(), WD=['일','월','화','수','목','금','토'];
+  const colTot={}, colDays={};
+  let body='';
+  for(let d=1;d<=dim;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const day=new Date(y,m,d).getDay();
+    const c=cell[ds]||{};
+    const rowTot=emps.reduce((s,e)=>s+((c[e.id]||[]).length),0);
+    body+=`<tr class="${ds===td?'d-today':''}">
+      <td class="d-date">${String(m+1).padStart(2,'0')}/${String(d).padStart(2,'0')} (${WD[day]})</td>
+      ${emps.map(e=>{
+        const list=c[e.id]||[];
+        colTot[e.id]=(colTot[e.id]||0)+list.length;
+        if(list.length)colDays[e.id]=(colDays[e.id]||0)+1;
+        if(!list.length)return '<td class="d-zero">·</td>';
+        const two=list.filter(r=>r.product==='2cam').length;
+        return `<td class="d-none">${list.length}팀${two?`<div style="font-size:11px;font-weight:600;color:#6D3BF0;margin-top:2px">2캠 ${two}</div>`:''}</td>`;
+      }).join('')}
+      <td style="font-weight:700">${rowTot||'·'}</td>
+    </tr>`;
+  }
+  const grand=emps.reduce((s,e)=>s+(colTot[e.id]||0),0);
+  wrap.innerHTML=`
+    <div class="rt-card rt-scroll" style="padding:0;overflow-x:auto;">
+      <table class="rt-day-tbl">
+        <thead><tr><th style="text-align:left">날짜</th>${emps.map(e=>`<th>${e.name}</th>`).join('')}<th>합계</th></tr></thead>
+        <tbody>${body||`<tr><td colspan="${emps.length+2}" class="rt-empty">이 달에 등록된 편집 기록이 없습니다</td></tr>`}</tbody>
+        <tfoot>
+          <tr><td class="d-date">월 합계</td>${emps.map(e=>`<td>${colTot[e.id]||0}팀</td>`).join('')}<td>${grand}팀</td></tr>
+          <tr><td class="d-date" style="font-weight:600;color:var(--g500)">작업일수 / 일평균</td>
+            ${emps.map(e=>{const dd=colDays[e.id]||0,tt=colTot[e.id]||0;
+              return `<td style="font-weight:600;color:var(--g600)">${dd}일 / ${dd?(tt/dd).toFixed(1):0}팀</td>`;}).join('')}
+            <td></td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="goal-note">· 하루에 편집한 팀 수입니다. 보라색은 그중 1인2캠 건수</div>`;
+}
+
+function renderEditMonthly(rows,wrap){
+  if(!rows.length){
+    wrap.innerHTML='<div class="rt-card"><div class="rt-empty">이 달에 등록된 편집 기록이 없습니다</div></div>';
+    return;
+  }
+  const byEmp={};
+  rows.forEach(r=>{
+    const eid=resolveEmpId(r);
+    if(!byEmp[eid])byEmp[eid]={name:(gEmps().find(e=>e.id===eid)||{}).name||r.empName||'(이름없음)',list:[],days:new Set()};
+    byEmp[eid].list.push(r);
+    if(edWorkDate(r))byEmp[eid].days.add(edWorkDate(r));
+  });
+  const ids=Object.keys(byEmp).sort((a,b)=>byEmp[b].list.length-byEmp[a].list.length);
+  const two=rows.filter(r=>r.product==='2cam').length;
+  wrap.innerHTML=`
+    <div class="rt-sum">
+      <div class="rt-sum-box"><div class="rt-sum-l">전체 편집</div><div class="rt-sum-v">${rows.length}팀</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">1인2캠</div><div class="rt-sum-v">${two}팀</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">1인1캠</div><div class="rt-sum-v">${rows.length-two}팀</div></div>
+      <div class="rt-sum-box"><div class="rt-sum-l">완료</div><div class="rt-sum-v">${rows.filter(edDone).length}팀</div></div>
+    </div>
+    <div class="rt-card" style="padding:0;overflow:hidden;">
+      <table class="rt-tbl">
+        <thead><tr><th>팀원</th><th style="text-align:right">1인1캠</th><th style="text-align:right">1인2캠</th><th style="text-align:right">작업일수</th><th style="text-align:right">일평균</th><th style="text-align:right">총 팀수</th></tr></thead>
+        <tbody>
+        ${ids.map(id=>{
+          const e=byEmp[id], n=e.list.length, dd=e.days.size;
+          const t2=e.list.filter(r=>r.product==='2cam').length;
+          const detail=e.list.slice().sort((a,b)=>(edWorkDate(a)<edWorkDate(b)?1:-1));
+          return `<tr class="rt-emp-row" onclick="edToggle('${id}')">
+            <td><b>${edOpen[id]?'▾':'▸'} ${e.name}</b></td>
+            <td style="text-align:right">${n-t2}팀</td>
+            <td style="text-align:right">${t2}팀</td>
+            <td style="text-align:right">${dd}일</td>
+            <td style="text-align:right">${dd?(n/dd).toFixed(1):0}팀</td>
+            <td style="text-align:right;font-weight:700;color:var(--blue)">${n}팀</td>
+          </tr>
+          ${edOpen[id]?detail.map(r=>`<tr class="rt-detail">
+            <td colspan="6">작업 ${edWorkDate(r)||'-'} · 예식 ${r.wdate||'-'} · <b>${[r.groom,r.bride].filter(Boolean).join(' ♥ ')}</b>
+              · ${edProdName(r.product)} · ${r.highlight?'하이라이트 ✓':'하이라이트 ✗'} / ${r.chapter?'챕터별 ✓':'챕터별 ✗'}
+              · <b style="color:${edDone(r)?'var(--green)':'var(--yellow)'}">${edDone(r)?'완료':'진행중'}</b></td>
           </tr>`).join(''):''}`;
         }).join('')}
         </tbody>
@@ -1595,28 +2271,28 @@ function renderAtt(){
       if(!byDay[day])byDay[day]=[];
       byDay[day].push(l);
     });
-    // 출근일수, 총 근무시간
-    let days=0,totalMin=0;
+    // 출근일수, 총 근무시간, 지각
+    let days=0,totalMin=0,lateDays=0,lateMin=0;
+    const dayInfo={};
     Object.entries(byDay).forEach(([day,ls])=>{
       const ins=ls.filter(l=>l.type==='checkin'||l.type==='return');
       const outs=ls.filter(l=>l.type==='checkout'||l.type==='away');
       if(ins.length>0)days++;
-      if(ins.length>0&&outs.length>0){
-        const firstIn=new Date(ins[0].time);
-        const lastOut=new Date(outs[outs.length-1].time);
-        totalMin+=Math.max(0,(lastOut-firstIn)/60000);
-      }
+      const firstIn=ins[0]||null, lastOut=outs[outs.length-1]||null;
+      const lt=firstIn?lateMinOf(firstIn):null;
+      if(lt&&lt>0){lateDays++;lateMin+=lt;}
+      if(firstIn&&lastOut)totalMin+=Math.max(0,(new Date(lastOut.time)-new Date(firstIn.time))/60000);
+      dayInfo[day]={firstIn,lastOut,late:lt,auto:!!(lastOut&&lastOut.auto)};
     });
     const h=Math.floor(totalMin/60),mn=Math.round(totalMin%60);
-    return{emp,days,totalMin,display:`${h}시간 ${mn}분`,byDay};
+    return{emp,days,totalMin,lateDays,lateMin,dayInfo,display:`${h}시간 ${mn}분`,byDay};
   });
   
   // 달력 헤더
   const dayHeaders=Array.from({length:daysInMonth},(_,i)=>{
     const d=new Date(y,m,i+1);
     const wd=['일','월','화','수','목','금','토'][d.getDay()];
-    const isWeekend=d.getDay()===0||d.getDay()===6;
-    return`<th style="min-width:32px;${isWeekend?'color:var(--blue);':''}">${i+1}<br><span style="font-size:10px;font-weight:400">${wd}</span></th>`;
+    return`<th style="min-width:32px;">${i+1}<br><span style="font-size:10px;font-weight:400">${wd}</span></th>`;
   }).join('');
   
   const empRows=rows.map(r=>{
@@ -1625,15 +2301,18 @@ function renderAtt(){
       const dayLogs=r.byDay[day]||[];
       const hasIn=dayLogs.some(l=>l.type==='checkin'||l.type==='return');
       const hasOut=dayLogs.some(l=>l.type==='checkout');
-      const d=new Date(y,m,day);
-      const isWeekend=d.getDay()===0||d.getDay()===6;
+      const info=r.dayInfo[day]||{};
       const dateKey=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
       const hasReport=!!((gReports(r.emp.id)||{})[dateKey]);
       const clickable=hasIn||hasReport;
-      let cell=`<td style="text-align:center;${isWeekend?'background:#f9fafb;':''}padding:6px 4px;${clickable?'cursor:pointer;':''}position:relative;" ${clickable?`onclick="openReportPopup('${r.emp.id}','${r.emp.name}',${day},${y},${m})"`:''}  title="${clickable?'클릭하여 보고 확인':''}">`;
-      if(hasIn&&hasOut)cell+=`<span style="color:var(--green);font-size:16px">●</span>`;
+      const tip=hasIn
+        ? `${info.firstIn?'출근 '+hhmm(info.firstIn.time):''}${info.lastOut?' / 퇴근 '+hhmm(info.lastOut.time)+(info.auto?'(자동)':''):''}${info.late>0?' · 지각 '+fmtMin(info.late):''}`
+        : '';
+      let cell=`<td style="text-align:center;padding:6px 4px;${clickable?'cursor:pointer;':''}${info.late>0?'background:var(--red-l);':''}position:relative;" ${clickable?`onclick="openReportPopup('${r.emp.id}','${r.emp.name}',${day},${y},${m})"`:''} title="${tip}">`;
+      if(hasIn&&info.late>0)cell+=`<span style="color:var(--red);font-size:15px;font-weight:800">▲</span>`;
+      else if(hasIn&&hasOut)cell+=`<span style="color:var(--green);font-size:16px">●</span>`;
       else if(hasIn)cell+=`<span style="color:var(--yellow);font-size:16px">◑</span>`;
-      else if(!isWeekend)cell+=`<span style="color:var(--g200);font-size:14px">○</span>`;
+      else cell+=`<span style="color:var(--g200);font-size:14px">○</span>`;
       if(hasReport)cell+=`<span style="position:absolute;top:1px;right:2px;font-size:9px">📝</span>`;
       return cell+'</td>';
     }).join('');
@@ -1651,6 +2330,8 @@ function renderAtt(){
         </div>
       </td>
       <td style="padding:8px 16px;text-align:center;font-size:13px;font-weight:700;white-space:nowrap">${r.days}일</td>
+      <td style="padding:8px 16px;text-align:center;font-size:13px;white-space:nowrap;${r.lateDays>0?'background:var(--red-l);color:var(--red);font-weight:800':'color:var(--g400)'}">${r.lateDays>0?`${r.lateDays}회`:'-'}</td>
+      <td style="padding:8px 16px;text-align:center;font-size:13px;white-space:nowrap;${r.lateMin>0?'color:var(--red);font-weight:700':'color:var(--g400)'}">${r.lateMin>0?fmtMin(r.lateMin):'-'}</td>
       <td style="padding:8px 16px;text-align:center;font-size:13px;color:var(--g600);white-space:nowrap">${r.totalMin>0?r.display:'-'}</td>
       ${cells}
     </tr>`;
@@ -1662,14 +2343,18 @@ function renderAtt(){
       <thead><tr>
         <th style="position:sticky;left:0;background:var(--g50);z-index:2;min-width:130px">직원</th>
         <th style="min-width:60px">출근일</th>
+        <th style="min-width:60px">지각</th>
+        <th style="min-width:90px">누적 지각</th>
         <th style="min-width:90px">근무시간</th>
         ${dayHeaders}
       </tr></thead>
       <tbody>${empRows}</tbody>
     </table>
     </div>
-    <div style="margin-top:12px;font-size:12px;color:var(--g500)">
-      ● 정상출퇴근 &nbsp; ◑ 출근만 기록 &nbsp; ○ 미출근 &nbsp; 📝 업무보고 있음 (클릭)
+    <div style="margin-top:12px;font-size:12px;color:var(--g500);line-height:1.8">
+      ▲ 지각 (${WORK_IN_STR} 이후 출근) &nbsp; ● 정상 출·퇴근 &nbsp; ◑ 출근만 기록 &nbsp; ○ 기록 없음 &nbsp; 📝 업무보고 있음 (클릭)<br>
+      근무시간 ${WORK_IN_STR} ~ ${WORK_OUT_STR} 기준 · 퇴근 미기록 건은 ${AUTO_OUT_H}시에 자동 퇴근 처리 · 셀에 마우스를 올리면 실제 출·퇴근 시각이 표시됩니다<br>
+      지각은 팀원이 <b>[출근하기]</b> 버튼으로 직접 찍은 기록부터 집계됩니다 (버튼 도입 전 자동 기록은 제외)
     </div>
   `;
   emps.forEach(emp=>{

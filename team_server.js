@@ -9,7 +9,7 @@ function loadDB(){
   try{
     if(fs.existsSync(DB_PATH))return JSON.parse(fs.readFileSync(DB_PATH,'utf8'));
   }catch(e){console.log('DB 읽기 오류:',e.message);}
-  return {employees:[],tasks:{},attend:{},allowedIPs:[],extLogs:[],notices:[],checked:{},reports:{},requests:[],retouch:[]};
+  return {employees:[],tasks:{},attend:{},allowedIPs:[],extLogs:[],notices:[],checked:{},reports:{},requests:[],retouch:[],editlog:[]};
 }
 function saveDB(d){
   try{
@@ -19,12 +19,74 @@ function saveDB(d){
   }catch(e){console.log('DB 저장 오류:',e.message);}
 }
 
+// ── 조직 구성 시드: 소속/파트/기록권한이 아직 없는 직원만 채운다 ──
+const ORG_SEED={
+  '양은영':{dept:'denter',part:'marketing'},
+  '배지현':{dept:'denter',part:'content'},
+  '김득수':{dept:'art',part:'photo',retouch:true},
+  '김유리':{dept:'art',part:'photo',retouch:true},
+  '유진환':{dept:'art',part:'video',edit:true},
+  '노시진':{dept:'art',part:'video',edit:true}
+};
+function migrateOrg(d){
+  let changed=false;
+  if(!Array.isArray(d.employees))d.employees=[];
+  if(!Array.isArray(d.editlog)){d.editlog=[];changed=true;}
+  if(!Array.isArray(d.retouch)){d.retouch=[];changed=true;}
+  d.employees.forEach(e=>{
+    const seed=ORG_SEED[(e.name||'').trim()];
+    if(!seed)return;
+    // undefined 일 때만 채운다 → 대표가 직접 바꾼 값은 절대 덮어쓰지 않음
+    if(e.dept===undefined){e.dept=seed.dept;changed=true;}
+    if(e.part===undefined){e.part=seed.part;changed=true;}
+    if(seed.retouch&&e.retouch===undefined){e.retouch=true;changed=true;}
+    if(seed.edit&&e.edit===undefined){e.edit=true;changed=true;}
+  });
+  return changed;
+}
+
 let mem=loadDB();
+if(migrateOrg(mem)){saveDB(mem);console.log('조직 구성 마이그레이션 적용됨');}
 let saveTimer=null;
 function scheduleSave(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>saveDB(mem),500);
 }
+
+// ── 근무시간 / 자동퇴근 (한국시간 고정) ──
+const KST_OFF=9*60*60*1000;
+const WORK_IN_H=9, WORK_IN_M=0;     // 출근 09:00
+const WORK_OUT_H=18, WORK_OUT_M=0;  // 퇴근 18:00
+const AUTO_OUT_H=parseInt(process.env.AUTO_OUT_HOUR,10)||19; // 19시 넘으면 자동 퇴근 처리
+
+function kstParts(ms){ const d=new Date(ms+KST_OFF); return {
+  y:d.getUTCFullYear(), mo:d.getUTCMonth(), d:d.getUTCDate(),
+  h:d.getUTCHours(), mi:d.getUTCMinutes(),
+  date:d.toISOString().slice(0,10)
+};}
+function kstDateOf(iso){ try{ return kstParts(Date.parse(iso)).date; }catch{ return ''; } }
+
+// 오늘(KST) 출근만 찍고 퇴근을 안 찍은 사람을 19:00 로 자동 퇴근 처리
+function autoCheckoutSweep(){
+  const now=Date.now(), k=kstParts(now);
+  if(k.h<AUTO_OUT_H)return;
+  const cutoffISO=new Date(Date.parse(`${k.date}T${String(AUTO_OUT_H).padStart(2,'0')}:00:00+09:00`)).toISOString();
+  let changed=false;
+  Object.keys(mem.attend||{}).forEach(id=>{
+    const logs=(mem.attend[id]||[]).filter(l=>kstDateOf(l.time)===k.date);
+    if(!logs.length)return;
+    const last=logs[logs.length-1];
+    if(last.type!=='checkin'&&last.type!=='return')return;
+    // 19시 이후에 출근을 찍은 야간 근무 건은 자동 퇴근시키지 않는다
+    if(Date.parse(last.time)>=Date.parse(cutoffISO))return;
+    mem.attend[id].push({type:'checkout',time:cutoffISO,ip:'auto',auto:true});
+    changed=true;
+    console.log(`자동 퇴근 처리: ${id} @ ${k.date} ${AUTO_OUT_H}:00`);
+  });
+  if(changed)scheduleSave();
+}
+setInterval(autoCheckoutSweep,60*1000);
+setTimeout(autoCheckoutSweep,3000);
 
 const srv=http.createServer((req,res)=>{
   const p=new URL(req.url,'http://x').pathname;
@@ -46,8 +108,14 @@ const srv=http.createServer((req,res)=>{
     req.on('end',()=>{
       try{
         const incoming=JSON.parse(b);
-        // 보정 기록은 전용 통로로만 수정 (전체 덮어쓰기로 유실되는 것 방지)
+        // 보정/편집 기록은 전용 통로로만 수정 (전체 덮어쓰기로 유실되는 것 방지)
         incoming.retouch=mem.retouch||[];
+        incoming.editlog=mem.editlog||[];
+        // 출퇴근도 /api/attend 전용 통로로만 기록 — 삭제된 팀원 기록만 정리한다
+        const keepAtt=mem.attend||{};
+        const liveIds=new Set((incoming.employees||[]).map(e=>e.id));
+        Object.keys(keepAtt).forEach(k=>{ if(!liveIds.has(k))delete keepAtt[k]; });
+        incoming.attend=keepAtt;
         mem=incoming;scheduleSave();res.writeHead(200);res.end('{"ok":true}');
       }
       catch{res.writeHead(400);res.end('{"error":"invalid"}');}
@@ -73,6 +141,29 @@ const srv=http.createServer((req,res)=>{
       }catch{res.writeHead(400);res.end('{"error":"invalid"}');}
     });return;
   }
+  if(p==='/api/editlog'&&req.method==='POST'){
+    let b='';req.on('data',c=>b+=c);
+    req.on('end',()=>{
+      try{
+        const d=JSON.parse(b);
+        if(!mem.editlog)mem.editlog=[];
+        if(d.action==='add'&&d.rec&&d.rec.id){
+          if(!mem.editlog.some(r=>r.id===d.rec.id))mem.editlog.unshift(d.rec);
+          if(mem.editlog.length>5000)mem.editlog=mem.editlog.slice(0,5000);
+        }else if(d.action==='upd'&&d.rec&&d.rec.id){
+          const i=mem.editlog.findIndex(r=>r.id===d.rec.id);
+          if(i>=0)mem.editlog[i]=d.rec; else mem.editlog.unshift(d.rec);
+        }else if(d.action==='del'&&d.id){
+          mem.editlog=mem.editlog.filter(r=>r.id!==d.id);
+        }else{
+          res.writeHead(400);res.end('{"error":"invalid"}');return;
+        }
+        scheduleSave();
+        res.writeHead(200,{'Content-Type':'application/json'});
+        res.end(JSON.stringify({ok:true,count:mem.editlog.length}));
+      }catch{res.writeHead(400);res.end('{"error":"invalid"}');}
+    });return;
+  }
   if(p==='/api/attend'&&req.method==='POST'){
     let b='';req.on('data',c=>b+=c);
     req.on('end',()=>{
@@ -80,8 +171,26 @@ const srv=http.createServer((req,res)=>{
         const{empId,type,ip}=JSON.parse(b);
         if(!mem.attend)mem.attend={};
         if(!mem.attend[empId])mem.attend[empId]=[];
-        mem.attend[empId].push({type,time:new Date().toISOString(),ip:ip||''});
-        if(mem.attend[empId].length>200)mem.attend[empId]=mem.attend[empId].slice(-200);
+        const nowISO=new Date().toISOString();
+        const k=kstParts(Date.now());
+        const todayLogs=mem.attend[empId].filter(l=>kstDateOf(l.time)===k.date);
+        const last=todayLogs[todayLogs.length-1];
+        // 같은 상태 연속 기록 방지 (출근 중복 클릭 등)
+        const isIn=t=>t==='checkin'||t==='return';
+        if(last&&((isIn(last.type)&&isIn(type))||(last.type===type))){
+          res.writeHead(200);res.end(JSON.stringify({ok:true,dup:true}));return;
+        }
+        const rec={type,time:nowISO,ip:ip||''};
+        if(type==='checkin'||type==='return'){
+          const lateMin=(k.h*60+k.mi)-(WORK_IN_H*60+WORK_IN_M);
+          if(type==='checkin')rec.late=Math.max(0,lateMin);
+        }
+        if(type==='checkout'){
+          const earlyMin=(WORK_OUT_H*60+WORK_OUT_M)-(k.h*60+k.mi);
+          rec.early=Math.max(0,earlyMin);
+        }
+        mem.attend[empId].push(rec);
+        if(mem.attend[empId].length>400)mem.attend[empId]=mem.attend[empId].slice(-400);
         scheduleSave();res.writeHead(200);res.end('{"ok":true}');
       }catch{res.writeHead(400);res.end('{"error":"invalid"}');}
     });return;
