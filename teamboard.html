@@ -454,6 +454,13 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
 .ac-btn:disabled { background:var(--g200); color:var(--g400); cursor:not-allowed; }
 .ac-warn { margin-top:12px; background:var(--red-l); border:1.5px solid var(--red); border-radius:var(--rs); padding:11px 14px; font-size:13px; font-weight:700; color:#C4303C; }
 .ac-note { margin-top:10px; font-size:12px; color:var(--g500); line-height:1.6; }
+.ac-policy { margin-top:12px; background:var(--yellow-l); border:1.5px solid #F0C24B; border-radius:var(--rs); padding:13px 15px; }
+.ac-policy-t { font-size:13px; font-weight:800; color:#8A5A00; margin-bottom:6px; }
+.ac-policy-b { font-size:12.5px; color:#8A5A00; line-height:1.75; font-weight:600; }
+.ac-policy-cnt { margin-top:9px; padding-top:9px; border-top:1px dashed #E0B84B; font-size:12.5px; font-weight:700; color:#8A5A00; }
+.ac-policy.over { background:var(--red-l); border-color:var(--red); }
+.ac-policy.over .ac-policy-t, .ac-policy.over .ac-policy-b, .ac-policy.over .ac-policy-cnt { color:#C4303C; }
+.ac-policy.over .ac-policy-cnt { border-top-color:#F0A0A8; }
 .att-late-pill { font-size:10px; background:var(--red-l); color:var(--red); padding:2px 6px; border-radius:99px; font-weight:800; }
 </style>
 </head>
@@ -878,8 +885,9 @@ function addAtt(id,type,ip) {
   const now=new Date();
   const rec={type,time:now.toISOString(),ip:ip||''};
   const mod=now.getHours()*60+now.getMinutes();
-  if(type==='checkin')rec.late=Math.max(0,mod-(WORK_IN_H*60+WORK_IN_M));
-  if(type==='checkout')rec.early=Math.max(0,(WORK_OUT_H*60+WORK_OUT_M)-mod);
+  const e=empById(id);
+  if(type==='checkin'){rec.late=Math.max(0,mod-empStartMin(e));rec.base=empStartMin(e);}
+  if(type==='checkout')rec.early=Math.max(0,empEndMin(e)-mod);
   _cache.attend[id].push(rec);
   if(_cache.attend[id].length>400)_cache.attend[id]=_cache.attend[id].slice(-400);
   // 출퇴근은 즉시 서버에도 전송 (서버가 정본)
@@ -891,8 +899,29 @@ function addAtt(id,type,ip) {
 const WORK_IN_H=9, WORK_IN_M=0;     // 출근 09:00
 const WORK_OUT_H=18, WORK_OUT_M=0;  // 퇴근 18:00
 const AUTO_OUT_H=19;                // 19시 이후 미퇴근 건은 서버가 자동 퇴근 처리
+const LUNCH_MIN=60;                 // 점심시간 1시간은 근무시간에서 제외
+const LATE_LIMIT=2;                 // 월 2회 이상 지각 시 사내 규정에 따라 조치
+// 체류시간에서 점심 1시간을 뺀 순 근무시간
+function netWorkMin(gross){ return Math.max(0,(gross||0)-LUNCH_MIN); }
 const WORK_IN_STR=`${String(WORK_IN_H).padStart(2,'0')}:${String(WORK_IN_M).padStart(2,'0')}`;
 const WORK_OUT_STR=`${String(WORK_OUT_H).padStart(2,'0')}:${String(WORK_OUT_M).padStart(2,'0')}`;
+// 'HH:MM' → 분 / 분 → 'HH:MM'
+function hmToMin(str,def){
+  if(typeof str!=='string'||!/^\d{1,2}:\d{2}$/.test(str))return def;
+  const [h,m]=str.split(':').map(Number);
+  if(h>23||m>59)return def;
+  return h*60+m;
+}
+function minToHM(n){ return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`; }
+// 팀원별 출근/퇴근 기준시각 (미설정 시 09:00 / 18:00)
+function empStartMin(e){ return hmToMin(e&&e.startTime, WORK_IN_H*60+WORK_IN_M); }
+function empEndMin(e){ return hmToMin(e&&e.endTime, WORK_OUT_H*60+WORK_OUT_M); }
+function empStartStr(e){ return minToHM(empStartMin(e)); }
+function empEndStr(e){ return minToHM(empEndMin(e)); }
+function empById(id){ return gEmps().find(x=>x.id===id)||null; }
+// 프리 근무자 = 출퇴근/지각 관리 대상 아님
+function isFree(e){ return !!(e&&e.free); }
+
 function hhmm(iso){ try{const d=new Date(iso);return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch{return '-';} }
 function minOfDay(iso){ const d=new Date(iso); return d.getHours()*60+d.getMinutes(); }
 // 지각 분. [출근하기] 버튼으로 찍은 기록(late 필드 보유)만 집계한다.
@@ -1028,7 +1057,7 @@ function serr(m){document.getElementById('lerr').textContent=m;}
 
 function lo(){
   // 나가기 ≠ 퇴근. 퇴근은 [퇴근하기] 버튼으로만 기록된다.
-  if(cu&&cu!=='admin'){
+  if(cu&&cu!=='admin'&&!isFree(empById(cu.id))){
     const st=todayAttend(cu.id);
     if(st.inTime&&!st.outTime&&!confirm('아직 퇴근을 찍지 않았습니다.\n퇴근 기록 없이 나갈까요?'))return;
   }
@@ -1128,6 +1157,7 @@ function sat(t){
 }
 // Overview
 function getSt(id){
+  if(isFree(empById(id)))return{cls:'offline',txt:'프리 근무'};
   const l=gAtt(id);if(!l.length)return{cls:'offline',txt:'오프라인'};
   const lx=l[l.length-1];
   if(lx.type==='checkin'||lx.type==='return')return{cls:'online',txt:'근무 중'};
@@ -1181,7 +1211,7 @@ function renderOv(){
 // Manage
 function addEmp(){
   const emps=gEmps();
-  emps.push({id:'e'+Date.now(),name:'',code:'',pi:emps.length%PAL.length,dept:'',part:'',retouch:false,edit:false,goal:0});
+  emps.push({id:'e'+Date.now(),name:'',code:'',pi:emps.length%PAL.length,dept:'',part:'',retouch:false,edit:false,free:false,goal:0,startTime:'09:00',endTime:'18:00'});
   sEmps(emps);renderMg();
 }
 function saveEmp(id){
@@ -1196,12 +1226,18 @@ function saveEmp(id){
   const dpEl=document.getElementById(`md-${id}`);
   const ptEl=document.getElementById(`mp-${id}`);
   const glEl=document.getElementById(`mg-${id}`);
+  const stEl=document.getElementById(`ms-${id}`);
+  const enEl=document.getElementById(`mo-${id}`);
+  const frEl=document.getElementById(`mf-${id}`);
   emps[idx].name=name;emps[idx].code=code;
   emps[idx].retouch=rtEl?rtEl.checked:!!emps[idx].retouch;
   emps[idx].edit=edEl?edEl.checked:!!emps[idx].edit;
   if(dpEl)emps[idx].dept=dpEl.value;
   if(ptEl)emps[idx].part=DEPTS[emps[idx].dept]&&DEPTS[emps[idx].dept].parts[ptEl.value]?ptEl.value:'';
   if(glEl)emps[idx].goal=Math.max(0,parseInt(glEl.value,10)||0);
+  if(stEl)emps[idx].startTime=stEl.value||'09:00';
+  if(enEl)emps[idx].endTime=enEl.value||'18:00';
+  if(frEl)emps[idx].free=frEl.checked;
   sEmps(emps);
   renderMg();renderOv();toast(`${name} 저장 완료`);
 }
@@ -1243,11 +1279,16 @@ function renderMg(){
           <select class="msel" id="md-${e.id}" onchange="onDeptChange('${e.id}')">${deptOpts(e)}</select></div>
         <div class="mfield"><div class="mfl">파트</div>
           <select class="msel" id="mp-${e.id}" ${partOpts(e.dept).length?'':'disabled'}>${partSel(e)}</select></div>
+        <div class="mfield"><div class="mfl">출근 시각</div>
+          <input type="time" class="minput" id="ms-${e.id}" value="${empStartStr(e)}"></div>
+        <div class="mfield"><div class="mfl">퇴근 시각</div>
+          <input type="time" class="minput" id="mo-${e.id}" value="${empEndStr(e)}"></div>
         <div class="mfield" style="grid-column:1/-1">
           <div class="mfl">기록 권한 / 일일 할당량</div>
           <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
             <label class="rt-chk" style="margin-top:0"><input type="checkbox" id="mr-${e.id}" ${e.retouch?'checked':''}>보정 기록 (사진)</label>
             <label class="rt-chk" style="margin-top:0"><input type="checkbox" id="me-${e.id}" ${e.edit?'checked':''}>편집 기록 (영상)</label>
+            <label class="rt-chk" style="margin-top:0"><input type="checkbox" id="mf-${e.id}" ${e.free?'checked':''}>프리 근무 (출퇴근 기록 제외)</label>
             <label class="rt-chk" style="margin-top:0">보정 일일 할당량
               <input type="number" min="0" class="minput" id="mg-${e.id}" value="${e.goal||''}" placeholder="0"
                 style="width:80px;padding:6px 8px;font-size:13px;" autocomplete="off"> 장</label>
@@ -1591,6 +1632,25 @@ function confirmNotices(){
 // Util
 
 // ── 출퇴근 (출근/퇴근 버튼) ──
+// 해당 월의 지각 일수 / 누적 지각 분 (버튼으로 찍은 기록만 집계)
+function monthLate(id,base){
+  const d=base||new Date(), y=d.getFullYear(), m=d.getMonth();
+  const byDay={};
+  gAtt(id).forEach(l=>{
+    const t=new Date(l.time);
+    if(t.getFullYear()!==y||t.getMonth()!==m)return;
+    if(l.type!=='checkin'&&l.type!=='return')return;
+    const k=t.getDate();
+    if(!byDay[k])byDay[k]=l;   // 그날 최초 출근 기록
+  });
+  let days=0,mins=0;
+  Object.values(byDay).forEach(l=>{
+    const lt=lateMinOf(l);
+    if(lt&&lt>0){days++;mins+=lt;}
+  });
+  return {days,mins};
+}
+
 // 오늘 기록 요약: 최초 출근 / 마지막 퇴근 / 지각분 / 현재 근무중 여부
 function todayAttend(id){
   const today=new Date().toDateString();
@@ -1600,11 +1660,13 @@ function todayAttend(id){
   const inLog=ins[0]||null, outLog=outs[outs.length-1]||null;
   const last=logs[logs.length-1]||null;
   const working=!!last&&(last.type==='checkin'||last.type==='return');
-  const late=(inLog?lateMinOf(inLog):0)||0;
+  const lateRaw=inLog?lateMinOf(inLog):null;
+  const lateKnown=lateRaw!==null;   // 버튼으로 찍은 기록만 지각 판정 가능
+  const late=lateRaw||0;
   const early=outLog?(typeof outLog.early==='number'?outLog.early:Math.max(0,(WORK_OUT_H*60+WORK_OUT_M)-minOfDay(outLog.time))):0;
   let workedMin=0;
   if(inLog)workedMin=Math.max(0,((outLog?new Date(outLog.time):new Date())-new Date(inLog.time))/60000);
-  return {logs,inLog,outLog,working,late,early,workedMin,
+  return {logs,inLog,outLog,working,late,lateKnown,early,workedMin,
     inTime:inLog?hhmm(inLog.time):'',outTime:outLog?hhmm(outLog.time):'',
     autoOut:!!(outLog&&outLog.auto)};
 }
@@ -1615,8 +1677,9 @@ function doCheckIn(){
   if(st.working){toast('이미 출근 상태입니다');return;}
   const type=st.inLog?'return':'checkin';
   const now=new Date();
-  const late=Math.max(0,(now.getHours()*60+now.getMinutes())-(WORK_IN_H*60+WORK_IN_M));
-  if(type==='checkin'&&late>0&&!confirm(`현재 시각 ${hhmm(now.toISOString())} — 출근 시각 ${WORK_IN_STR} 기준 ${fmtMin(late)} 지각으로 기록됩니다.\n출근 처리할까요?`))return;
+  const me=empById(cu.id)||cu;
+  const late=Math.max(0,(now.getHours()*60+now.getMinutes())-empStartMin(me));
+  if(type==='checkin'&&late>0&&!confirm(`현재 시각 ${hhmm(now.toISOString())} — 내 출근 시각 ${empStartStr(me)} 기준 ${fmtMin(late)} 지각으로 기록됩니다.\n출근 처리할까요?`))return;
   addAtt(cu.id,type,myCurrentIP);
   renderAttendCard();
   toast(type==='checkin'?(late>0?`출근 기록 (지각 ${fmtMin(late)})`:'출근 기록 완료 👍'):'재출근 기록 완료');
@@ -1628,8 +1691,9 @@ function doCheckOut(){
   if(!st.inLog){toast('출근 기록이 없습니다');return;}
   if(!st.working){toast('이미 퇴근 상태입니다');return;}
   const now=new Date();
-  const early=Math.max(0,(WORK_OUT_H*60+WORK_OUT_M)-(now.getHours()*60+now.getMinutes()));
-  if(early>0&&!confirm(`퇴근 시각 ${WORK_OUT_STR} 보다 ${fmtMin(early)} 이릅니다.\n퇴근 처리할까요?`))return;
+  const me=empById(cu.id)||cu;
+  const early=Math.max(0,empEndMin(me)-(now.getHours()*60+now.getMinutes()));
+  if(early>0&&!confirm(`내 퇴근 시각 ${empEndStr(me)} 보다 ${fmtMin(early)} 이릅니다.\n퇴근 처리할까요?`))return;
   addAtt(cu.id,'checkout',myCurrentIP);
   renderAttendCard();
   toast('퇴근 기록 완료. 수고하셨습니다 🙌');
@@ -1638,33 +1702,51 @@ function doCheckOut(){
 function renderAttendCard(){
   const box=document.getElementById('attend-card');
   if(!box||!cu||cu==='admin')return;
+  const me=empById(cu.id)||cu;
+  if(isFree(me)){ box.innerHTML=''; return; }
   const st=todayAttend(cu.id);
-  const inCls=!st.inLog?'none':(st.late>0?'late':'ok');
+  const inStr=empStartStr(me), outStr=empEndStr(me);
+  const ml=monthLate(cu.id);
+  // 지각 판정이 불가능한 옛 기록은 초록(정시)으로 오해되지 않게 중립 표시
+  const inCls=!st.inLog?'none':(!st.lateKnown?'':(st.late>0?'late':'ok'));
   const stateTxt=st.working?'근무 중':(st.outLog?'퇴근':'출근 전');
   const stateColor=st.working?'var(--green)':(st.outLog?'var(--g600)':'var(--g400)');
   box.innerHTML=`
   <div class="ac">
     <div class="ac-top">
       <div class="ac-title">🕘 오늘 출퇴근 <span style="font-weight:700;font-size:13px;color:${stateColor}">· ${stateTxt}</span></div>
-      <div class="ac-work">근무시간 ${WORK_IN_STR} ~ ${WORK_OUT_STR}</div>
+      <div class="ac-work">내 근무 ${inStr} ~ ${outStr} · 점심 1시간 제외</div>
     </div>
     <div class="ac-row">
       <div class="ac-box"><div class="ac-l">출근</div>
-        <div class="ac-v ${inCls}">${st.inTime||'--:--'}</div></div>
+        <div class="ac-v ${inCls}">${st.inTime||'--:--'}</div>
+        ${st.inLog&&!st.lateKnown?`<div style="font-size:11px;color:var(--g500);font-weight:600;margin-top:3px">버튼 기록 아님 · 지각 집계 제외</div>`:''}</div>
       <div class="ac-box"><div class="ac-l">퇴근</div>
         <div class="ac-v ${st.outLog?'':'none'}">${st.outTime||'--:--'}${st.autoOut?' <span style="font-size:11px;color:var(--g500);font-weight:600">자동</span>':''}</div></div>
-      <div class="ac-box"><div class="ac-l">근무 시간</div>
-        <div class="ac-v ${st.inLog?'':'none'}">${st.inLog?fmtMin(st.workedMin):'--'}</div></div>
+      <div class="ac-box"><div class="ac-l">근무 시간 (점심 1시간 제외)</div>
+        <div class="ac-v ${st.inLog?'':'none'}">${st.inLog?fmtMin(netWorkMin(st.workedMin)):'--'}</div>
+        ${st.inLog?`<div style="font-size:11px;color:var(--g500);font-weight:600;margin-top:3px">체류 ${fmtMin(st.workedMin)} − 점심 1시간</div>`:''}</div>
     </div>
     <div class="ac-btns">
       <button class="ac-btn ac-in" onclick="doCheckIn()" ${st.working?'disabled':''}>${st.outLog&&!st.working?'재출근':'출근하기'}</button>
       <button class="ac-btn ac-out" onclick="doCheckOut()" ${st.working?'':'disabled'}>퇴근하기</button>
     </div>
-    ${st.late>0?`<div class="ac-warn">⚠️ 오늘 ${fmtMin(st.late)} 지각으로 기록되었습니다 (출근 ${WORK_IN_STR} 기준)</div>`:''}
+    ${st.late>0?`<div class="ac-warn">⚠️ 오늘 ${fmtMin(st.late)} 지각으로 기록되었습니다 (내 출근시각 ${inStr} 기준)</div>`:''}
+    <div class="ac-policy${ml.days>=LATE_LIMIT?' over':''}">
+      <div class="ac-policy-t">⚠️ 출근 시각 준수 안내</div>
+      <div class="ac-policy-b">
+        출근 시각(${inStr}) 이후 출근은 지각으로 자동 기록되며, 지각 시간과 횟수가 월별로 누적 집계됩니다.<br>
+        <b>월 ${LATE_LIMIT}회 이상 지각 시</b> 지각의 정도와 빈도에 따라 사내 규정에 따른 조치가 있습니다.
+      </div>
+      <div class="ac-policy-cnt">
+        이번 달 지각 <b>${ml.days}회</b> (누적 ${fmtMin(ml.mins)}) · 기준 ${LATE_LIMIT}회
+        ${ml.days>=LATE_LIMIT?' — <b>기준 초과</b>':''}
+      </div>
+    </div>
     <div class="ac-note">
       · 출근·퇴근은 반드시 버튼을 눌러 직접 기록해주세요. 로그인/로그아웃은 기록되지 않습니다.<br>
       · 퇴근을 누르지 않은 경우 ${AUTO_OUT_H}시에 자동 퇴근 처리됩니다.<br>
-      · 출근 시각(${WORK_IN_STR}) 미준수는 별도로 집계되어 관리됩니다.
+      · 출근 시각을 지키지 못한 날은 사유를 대표님께 요청 항목으로 남겨주세요.
     </div>
   </div>`;
 }
@@ -2254,8 +2336,9 @@ function renderAtt(){
   const y=attCurMonth.getFullYear(),m=attCurMonth.getMonth();
   document.getElementById('att-month-title').textContent=`${y}년 ${m+1}월`;
   const daysInMonth=new Date(y,m+1,0).getDate();
-  const emps=gEmps().filter(e=>e.name);
-  if(!emps.length){document.getElementById('att-table-wrap').innerHTML='<div style="font-size:14px;color:var(--g500)">등록된 팀원이 없습니다</div>';return;}
+  const freeEmps=gEmps().filter(e=>e.name&&isFree(e));
+  const emps=gEmps().filter(e=>e.name&&!isFree(e));
+  if(!emps.length){document.getElementById('att-table-wrap').innerHTML='<div style="font-size:14px;color:var(--g500)">출퇴근 기록 대상 팀원이 없습니다</div>';return;}
   
   // 직원별 날짜별 출퇴근 집계
   const rows=emps.map(emp=>{
@@ -2284,8 +2367,10 @@ function renderAtt(){
       if(firstIn&&lastOut)totalMin+=Math.max(0,(new Date(lastOut.time)-new Date(firstIn.time))/60000);
       dayInfo[day]={firstIn,lastOut,late:lt,auto:!!(lastOut&&lastOut.auto)};
     });
-    const h=Math.floor(totalMin/60),mn=Math.round(totalMin%60);
-    return{emp,days,totalMin,lateDays,lateMin,dayInfo,display:`${h}시간 ${mn}분`,byDay};
+    // 출근일수만큼 점심 1시간씩 제외
+    const netMin=Math.max(0,totalMin-days*LUNCH_MIN);
+    return{emp,days,totalMin,netMin,lateDays,lateMin,dayInfo,
+      display:fmtMin(netMin),grossDisplay:fmtMin(totalMin),byDay};
   });
   
   // 달력 헤더
@@ -2326,13 +2411,14 @@ function renderAtt(){
         <div class="att-emp-row">
           <canvas id="att-c-${r.emp.id}" width="28" height="28" class="att-emp-canvas"></canvas>
           <span style="font-weight:600;font-size:13px">${r.emp.name}</span>
+          <span style="font-size:10px;color:var(--g500);font-weight:700;font-family:monospace">${empStartStr(r.emp)}</span>
           ${extCount>0?`<span style="font-size:10px;background:var(--yellow-l);color:var(--yellow);padding:2px 6px;border-radius:99px;font-weight:700">외부${extCount}</span>`:''}
         </div>
       </td>
       <td style="padding:8px 16px;text-align:center;font-size:13px;font-weight:700;white-space:nowrap">${r.days}일</td>
-      <td style="padding:8px 16px;text-align:center;font-size:13px;white-space:nowrap;${r.lateDays>0?'background:var(--red-l);color:var(--red);font-weight:800':'color:var(--g400)'}">${r.lateDays>0?`${r.lateDays}회`:'-'}</td>
+      <td style="padding:8px 16px;text-align:center;font-size:13px;white-space:nowrap;${r.lateDays>=LATE_LIMIT?'background:var(--red);color:#fff;font-weight:800':(r.lateDays>0?'background:var(--red-l);color:var(--red);font-weight:800':'color:var(--g400)')}">${r.lateDays>0?`${r.lateDays}회${r.lateDays>=LATE_LIMIT?' ⚠':''}`:'-'}</td>
       <td style="padding:8px 16px;text-align:center;font-size:13px;white-space:nowrap;${r.lateMin>0?'color:var(--red);font-weight:700':'color:var(--g400)'}">${r.lateMin>0?fmtMin(r.lateMin):'-'}</td>
-      <td style="padding:8px 16px;text-align:center;font-size:13px;color:var(--g600);white-space:nowrap">${r.totalMin>0?r.display:'-'}</td>
+      <td style="padding:8px 16px;text-align:center;font-size:13px;color:var(--g600);white-space:nowrap">${r.totalMin>0?`${r.display}<div style="font-size:11px;color:var(--g400)">체류 ${r.grossDisplay}</div>`:'-'}</td>
       ${cells}
     </tr>`;
   }).join('');
@@ -2343,18 +2429,21 @@ function renderAtt(){
       <thead><tr>
         <th style="position:sticky;left:0;background:var(--g50);z-index:2;min-width:130px">직원</th>
         <th style="min-width:60px">출근일</th>
-        <th style="min-width:60px">지각</th>
+        <th style="min-width:60px">지각<br><span style="font-size:10px;font-weight:500;color:var(--g500)">(기준 월 ${LATE_LIMIT}회)</span></th>
         <th style="min-width:90px">누적 지각</th>
-        <th style="min-width:90px">근무시간</th>
+        <th style="min-width:110px">근무시간<br><span style="font-size:10px;font-weight:500;color:var(--g500)">(점심 1시간 제외)</span></th>
         ${dayHeaders}
       </tr></thead>
       <tbody>${empRows}</tbody>
     </table>
     </div>
     <div style="margin-top:12px;font-size:12px;color:var(--g500);line-height:1.8">
-      ▲ 지각 (${WORK_IN_STR} 이후 출근) &nbsp; ● 정상 출·퇴근 &nbsp; ◑ 출근만 기록 &nbsp; ○ 기록 없음 &nbsp; 📝 업무보고 있음 (클릭)<br>
-      근무시간 ${WORK_IN_STR} ~ ${WORK_OUT_STR} 기준 · 퇴근 미기록 건은 ${AUTO_OUT_H}시에 자동 퇴근 처리 · 셀에 마우스를 올리면 실제 출·퇴근 시각이 표시됩니다<br>
-      지각은 팀원이 <b>[출근하기]</b> 버튼으로 직접 찍은 기록부터 집계됩니다 (버튼 도입 전 자동 기록은 제외)
+      ▲ 지각 (기준 출근시각 초과) &nbsp; ● 정상 출·퇴근 &nbsp; ◑ 출근만 기록 &nbsp; ○ 기록 없음 &nbsp; 📝 업무보고 있음 (클릭)<br>
+      팀원 이름 옆 숫자가 그 팀원의 기준 출근시각입니다 (팀원 관리에서 변경) · 퇴근 미기록 건은 ${AUTO_OUT_H}시에 자동 퇴근 처리 · 셀에 마우스를 올리면 실제 출·퇴근 시각이 표시됩니다<br>
+      근무시간은 출근~퇴근 체류시간에서 <b>출근일수 × 점심 1시간</b>을 뺀 값입니다<br>
+      지각은 팀원이 <b>[출근하기]</b> 버튼으로 직접 찍은 기록부터 집계됩니다 (버튼 도입 전 자동 기록은 제외)<br>
+      <b style="color:var(--red)">월 ${LATE_LIMIT}회 이상</b> 지각한 팀원은 지각 칸이 빨갛게 채워집니다
+      ${freeEmps.length?`<br>프리 근무자는 출퇴근 관리 대상이 아니라 표에서 제외됩니다 — ${freeEmps.map(e=>e.name).join(', ')}`:''}
     </div>
   `;
   emps.forEach(emp=>{

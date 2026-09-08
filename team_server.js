@@ -21,7 +21,8 @@ function saveDB(d){
 
 // ── 조직 구성 시드: 소속/파트/기록권한이 아직 없는 직원만 채운다 ──
 const ORG_SEED={
-  '양은영':{dept:'denter',part:'marketing'},
+  '이지연':{free:true},   // 완전 프리 — 출퇴근 기록 대상 아님
+  '양은영':{dept:'denter',part:'marketing',startTime:'09:30',endTime:'18:30'},
   '배지현':{dept:'denter',part:'content'},
   '김득수':{dept:'art',part:'photo',retouch:true},
   '김유리':{dept:'art',part:'photo',retouch:true},
@@ -37,10 +38,13 @@ function migrateOrg(d){
     const seed=ORG_SEED[(e.name||'').trim()];
     if(!seed)return;
     // undefined 일 때만 채운다 → 대표가 직접 바꾼 값은 절대 덮어쓰지 않음
-    if(e.dept===undefined){e.dept=seed.dept;changed=true;}
-    if(e.part===undefined){e.part=seed.part;changed=true;}
+    if(seed.dept&&e.dept===undefined){e.dept=seed.dept;changed=true;}
+    if(seed.part&&e.part===undefined){e.part=seed.part;changed=true;}
     if(seed.retouch&&e.retouch===undefined){e.retouch=true;changed=true;}
     if(seed.edit&&e.edit===undefined){e.edit=true;changed=true;}
+    if(seed.free&&e.free===undefined){e.free=true;changed=true;}
+    if(seed.startTime&&e.startTime===undefined){e.startTime=seed.startTime;changed=true;}
+    if(seed.endTime&&e.endTime===undefined){e.endTime=seed.endTime;changed=true;}
   });
   return changed;
 }
@@ -59,6 +63,17 @@ const WORK_IN_H=9, WORK_IN_M=0;     // 출근 09:00
 const WORK_OUT_H=18, WORK_OUT_M=0;  // 퇴근 18:00
 const AUTO_OUT_H=parseInt(process.env.AUTO_OUT_HOUR,10)||19; // 19시 넘으면 자동 퇴근 처리
 
+// 'HH:MM' → 분. 값이 없거나 형식이 틀리면 기본값
+function hmToMin(str,def){
+  if(typeof str!=='string'||!/^\d{1,2}:\d{2}$/.test(str))return def;
+  const [h,m]=str.split(':').map(Number);
+  if(h>23||m>59)return def;
+  return h*60+m;
+}
+function empById(id){ return (mem.employees||[]).find(e=>e.id===id)||null; }
+function empStartMin(id){ return hmToMin((empById(id)||{}).startTime, WORK_IN_H*60+WORK_IN_M); }
+function empEndMin(id){ return hmToMin((empById(id)||{}).endTime, WORK_OUT_H*60+WORK_OUT_M); }
+
 function kstParts(ms){ const d=new Date(ms+KST_OFF); return {
   y:d.getUTCFullYear(), mo:d.getUTCMonth(), d:d.getUTCDate(),
   h:d.getUTCHours(), mi:d.getUTCMinutes(),
@@ -73,6 +88,7 @@ function autoCheckoutSweep(){
   const cutoffISO=new Date(Date.parse(`${k.date}T${String(AUTO_OUT_H).padStart(2,'0')}:00:00+09:00`)).toISOString();
   let changed=false;
   Object.keys(mem.attend||{}).forEach(id=>{
+    if((empById(id)||{}).free)return;   // 프리 근무자는 출퇴근 관리 대상 아님
     const logs=(mem.attend[id]||[]).filter(l=>kstDateOf(l.time)===k.date);
     if(!logs.length)return;
     const last=logs[logs.length-1];
@@ -181,13 +197,13 @@ const srv=http.createServer((req,res)=>{
           res.writeHead(200);res.end(JSON.stringify({ok:true,dup:true}));return;
         }
         const rec={type,time:nowISO,ip:ip||''};
-        if(type==='checkin'||type==='return'){
-          const lateMin=(k.h*60+k.mi)-(WORK_IN_H*60+WORK_IN_M);
-          if(type==='checkin')rec.late=Math.max(0,lateMin);
+        const nowMin=k.h*60+k.mi;
+        if(type==='checkin'){
+          rec.late=Math.max(0,nowMin-empStartMin(empId));
+          rec.base=empStartMin(empId);   // 판정에 쓴 기준 출근시각(분)
         }
         if(type==='checkout'){
-          const earlyMin=(WORK_OUT_H*60+WORK_OUT_M)-(k.h*60+k.mi);
-          rec.early=Math.max(0,earlyMin);
+          rec.early=Math.max(0,empEndMin(empId)-nowMin);
         }
         mem.attend[empId].push(rec);
         if(mem.attend[empId].length>400)mem.attend[empId]=mem.attend[empId].slice(-400);
