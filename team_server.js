@@ -71,6 +71,12 @@ function hmToMin(str,def){
   return h*60+m;
 }
 function empById(id){ return (mem.employees||[]).find(e=>e.id===id)||null; }
+
+// 모바일 기기 판별 (출근 체크는 사무실 PC 에서만)
+function isMobileUA(ua){
+  if(!ua)return false;
+  return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Mobile|webOS|BlackBerry|Windows Phone/i.test(ua);
+}
 function empStartMin(id){ return hmToMin((empById(id)||{}).startTime, WORK_IN_H*60+WORK_IN_M); }
 function empEndMin(id){ return hmToMin((empById(id)||{}).endTime, WORK_OUT_H*60+WORK_OUT_M); }
 
@@ -185,6 +191,11 @@ const srv=http.createServer((req,res)=>{
     req.on('end',()=>{
       try{
         const{empId,type,ip}=JSON.parse(b);
+        // 출근(재출근 포함)은 모바일에서 불가 — 클라이언트 차단을 우회한 요청도 여기서 거른다
+        if((type==='checkin'||type==='return')&&isMobileUA(req.headers['user-agent'])){
+          res.writeHead(403,{'Content-Type':'application/json'});
+          res.end('{"error":"mobile_blocked"}');return;
+        }
         if(!mem.attend)mem.attend={};
         if(!mem.attend[empId])mem.attend[empId]=[];
         const nowISO=new Date().toISOString();

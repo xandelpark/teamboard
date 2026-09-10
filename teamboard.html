@@ -454,6 +454,8 @@ body { font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; bac
 .ac-btn:disabled { background:var(--g200); color:var(--g400); cursor:not-allowed; }
 .ac-warn { margin-top:12px; background:var(--red-l); border:1.5px solid var(--red); border-radius:var(--rs); padding:11px 14px; font-size:13px; font-weight:700; color:#C4303C; }
 .ac-note { margin-top:10px; font-size:12px; color:var(--g500); line-height:1.6; }
+@media(max-width:420px){ .ac-btn { font-size:14px; padding:14px 8px; } }
+.ac-mobile { margin-top:12px; background:var(--g800); color:#fff; border-radius:var(--rs); padding:13px 15px; font-size:12.5px; line-height:1.7; font-weight:600; }
 .ac-policy { margin-top:12px; background:var(--yellow-l); border:1.5px solid #F0C24B; border-radius:var(--rs); padding:13px 15px; }
 .ac-policy-t { font-size:13px; font-weight:800; color:#8A5A00; margin-bottom:6px; }
 .ac-policy-b { font-size:12.5px; color:#8A5A00; line-height:1.75; font-weight:600; }
@@ -892,7 +894,16 @@ function addAtt(id,type,ip) {
   if(_cache.attend[id].length>400)_cache.attend[id]=_cache.attend[id].slice(-400);
   // 출퇴근은 즉시 서버에도 전송 (서버가 정본)
   fetch('/api/attend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({empId:id,type,ip:ip||''})})
-    .then(()=>loadFromServer()).then(()=>{ if(cu&&cu!=='admin')renderAttendCard(); }).catch(()=>{});
+    .then(async r=>{
+      if(!r.ok){
+        const j=await r.json().catch(()=>({}));
+        // 서버가 거부하면 낙관적으로 넣어둔 로컬 기록을 걷어낸다
+        _cache.attend[id]=(_cache.attend[id]||[]).filter(x=>x!==rec);
+        if(j.error==='mobile_blocked')toast('모바일에서는 출근 체크를 할 수 없습니다');
+      }
+      return loadFromServer();
+    })
+    .then(()=>{ if(cu&&cu!=='admin')renderAttendCard(); }).catch(()=>{});
 }
 
 // ── 근무시간 규정 ──
@@ -921,6 +932,17 @@ function empEndStr(e){ return minToHM(empEndMin(e)); }
 function empById(id){ return gEmps().find(x=>x.id===id)||null; }
 // 프리 근무자 = 출퇴근/지각 관리 대상 아님
 function isFree(e){ return !!(e&&e.free); }
+
+// 모바일 기기 판별 — 출근 체크는 사무실 PC 에서만 가능하게
+function isMobileDevice(){
+  const ua=navigator.userAgent||'';
+  // Chromium 계열이 제공하는 정확한 신호 우선
+  if(navigator.userAgentData&&typeof navigator.userAgentData.mobile==='boolean'&&navigator.userAgentData.mobile)return true;
+  if(/Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Mobile|webOS|BlackBerry|Windows Phone/i.test(ua))return true;
+  // iPadOS 13+ 는 데스크톱 UA 로 위장하므로 터치 지원 여부로 한 번 더 거른다
+  if(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)return true;
+  return false;
+}
 
 function hhmm(iso){ try{const d=new Date(iso);return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch{return '-';} }
 function minOfDay(iso){ const d=new Date(iso); return d.getHours()*60+d.getMinutes(); }
@@ -1673,6 +1695,10 @@ function todayAttend(id){
 
 function doCheckIn(){
   if(!cu||cu==='admin')return;
+  if(isMobileDevice()){
+    alert('출근 체크는 사무실 PC 에서만 가능합니다.\n\n모바일 기기에서는 출근을 기록할 수 없습니다.\n퇴근은 모바일에서도 가능합니다.');
+    return;
+  }
   const st=todayAttend(cu.id);
   if(st.working){toast('이미 출근 상태입니다');return;}
   const type=st.inLog?'return':'checkin';
@@ -1707,6 +1733,7 @@ function renderAttendCard(){
   const st=todayAttend(cu.id);
   const inStr=empStartStr(me), outStr=empEndStr(me);
   const ml=monthLate(cu.id);
+  const mob=isMobileDevice();
   // 지각 판정이 불가능한 옛 기록은 초록(정시)으로 오해되지 않게 중립 표시
   const inCls=!st.inLog?'none':(!st.lateKnown?'':(st.late>0?'late':'ok'));
   const stateTxt=st.working?'근무 중':(st.outLog?'퇴근':'출근 전');
@@ -1728,10 +1755,15 @@ function renderAttendCard(){
         ${st.inLog?`<div style="font-size:11px;color:var(--g500);font-weight:600;margin-top:3px">체류 ${fmtMin(st.workedMin)} − 점심 1시간</div>`:''}</div>
     </div>
     <div class="ac-btns">
-      <button class="ac-btn ac-in" onclick="doCheckIn()" ${st.working?'disabled':''}>${st.outLog&&!st.working?'재출근':'출근하기'}</button>
+      <button class="ac-btn ac-in" onclick="doCheckIn()" ${st.working||mob?'disabled':''}
+        title="${mob?'출근 체크는 사무실 PC 에서만 가능합니다':''}">${mob?'📵 PC에서만':(st.outLog&&!st.working?'재출근':'출근하기')}</button>
       <button class="ac-btn ac-out" onclick="doCheckOut()" ${st.working?'':'disabled'}>퇴근하기</button>
     </div>
     ${st.late>0?`<div class="ac-warn">⚠️ 오늘 ${fmtMin(st.late)} 지각으로 기록되었습니다 (내 출근시각 ${inStr} 기준)</div>`:''}
+    ${mob?`<div class="ac-mobile">
+      📵 <b>모바일에서는 출근 체크가 되지 않습니다.</b><br>
+      출근은 반드시 사무실 PC 에서 기록해주세요. (퇴근은 모바일에서도 가능합니다)
+    </div>`:''}
     <div class="ac-policy${ml.days>=LATE_LIMIT?' over':''}">
       <div class="ac-policy-t">⚠️ 출근 시각 준수 안내</div>
       <div class="ac-policy-b">
