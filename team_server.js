@@ -49,8 +49,23 @@ function migrateOrg(d){
   return changed;
 }
 
+// 되돌릴 수 있도록 주기적으로 스냅샷을 남긴다 (최근 20개 유지)
+const SNAP_DIR=path.join(path.dirname(DB_PATH),'snapshots');
+function snapshot(tag){
+  try{
+    if(!(mem.employees||[]).length)return;   // 빈 상태는 백업하지 않는다
+    if(!fs.existsSync(SNAP_DIR))fs.mkdirSync(SNAP_DIR,{recursive:true});
+    const name=`db_${new Date().toISOString().replace(/[:.]/g,'-')}${tag?'_'+tag:''}.json`;
+    fs.writeFileSync(path.join(SNAP_DIR,name),JSON.stringify(mem),'utf8');
+    const files=fs.readdirSync(SNAP_DIR).filter(f=>f.endsWith('.json')).sort();
+    while(files.length>20){ fs.unlinkSync(path.join(SNAP_DIR,files.shift())); }
+  }catch(e){console.log('스냅샷 실패:',e.message);}
+}
+
 let mem=loadDB();
 if(migrateOrg(mem)){saveDB(mem);console.log('조직 구성 마이그레이션 적용됨');}
+snapshot('boot');
+setInterval(()=>snapshot(''),60*60*1000);   // 1시간마다
 let saveTimer=null;
 function scheduleSave(){
   clearTimeout(saveTimer);
@@ -130,12 +145,21 @@ const srv=http.createServer((req,res)=>{
     req.on('end',()=>{
       try{
         const incoming=JSON.parse(b);
+        // ★ 안전장치: 서버엔 직원이 있는데 빈 직원 목록이 올라오면 전체 덮어쓰기를 거부한다.
+        //   (클라이언트가 /api/db 로드에 실패해 빈 캐시를 저장하려는 경우 = 데이터 전멸)
+        const inEmps=Array.isArray(incoming.employees)?incoming.employees:[];
+        if(inEmps.length===0&&(mem.employees||[]).length>0){
+          console.log('⚠ 빈 직원 목록 덮어쓰기 차단 — 요청 무시');
+          res.writeHead(409,{'Content-Type':'application/json'});
+          res.end('{"error":"refused_empty_overwrite"}');return;
+        }
         // 보정/편집 기록은 전용 통로로만 수정 (전체 덮어쓰기로 유실되는 것 방지)
         incoming.retouch=mem.retouch||[];
         incoming.editlog=mem.editlog||[];
-        // 출퇴근도 /api/attend 전용 통로로만 기록 — 삭제된 팀원 기록만 정리한다
-        const keepAtt=mem.attend||{};
-        const liveIds=new Set((incoming.employees||[]).map(e=>e.id));
+        // 출퇴근은 /api/attend 전용 통로로만 기록한다.
+        // 서버 기록을 우선하되, 서버에 없는 팀원 기록은 들어온 값을 받아준다(복구용).
+        const keepAtt=Object.assign({},incoming.attend||{},mem.attend||{});
+        const liveIds=new Set(inEmps.map(e=>e.id));
         Object.keys(keepAtt).forEach(k=>{ if(!liveIds.has(k))delete keepAtt[k]; });
         incoming.attend=keepAtt;
         mem=incoming;scheduleSave();res.writeHead(200);res.end('{"ok":true}');
