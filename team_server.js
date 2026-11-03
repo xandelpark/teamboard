@@ -156,6 +156,7 @@ const srv=http.createServer((req,res)=>{
         // 보정/편집 기록은 전용 통로로만 수정 (전체 덮어쓰기로 유실되는 것 방지)
         incoming.retouch=mem.retouch||[];
         incoming.editlog=mem.editlog||[];
+        incoming.album=mem.album||{};
         // 출퇴근은 /api/attend 전용 통로로만 기록한다.
         // 서버 기록을 우선하되, 서버에 없는 팀원 기록은 들어온 값을 받아준다(복구용).
         const keepAtt=Object.assign({},incoming.attend||{},mem.attend||{});
@@ -184,6 +185,21 @@ const srv=http.createServer((req,res)=>{
         scheduleSave();
         res.writeHead(200,{'Content-Type':'application/json'});
         res.end(JSON.stringify({ok:true,count:mem.retouch.length}));
+      }catch{res.writeHead(400);res.end('{"error":"invalid"}');}
+    });return;
+  }
+  // 앨범 진행 여부 (웨딩자동화시트 상품주소 기입) — 맥의 hq_album_status.py 가 매일 올린다
+  // { updatedAt, status: { 보정기록id: done|wait|nf|dup } }
+  if(p==='/api/album'&&req.method==='POST'){
+    let b='';req.on('data',c=>b+=c);
+    req.on('end',()=>{
+      try{
+        const d=JSON.parse(b);
+        if(!d||typeof d.status!=='object'||!d.updatedAt){res.writeHead(400);res.end('{"error":"invalid"}');return;}
+        mem.album={updatedAt:String(d.updatedAt),status:d.status};
+        scheduleSave();
+        res.writeHead(200,{'Content-Type':'application/json'});
+        res.end(JSON.stringify({ok:true,count:Object.keys(d.status).length}));
       }catch{res.writeHead(400);res.end('{"error":"invalid"}');}
     });return;
   }
