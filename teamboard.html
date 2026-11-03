@@ -1883,17 +1883,6 @@ function renderRetouchStaff(){
     <div class="rt-card">
       <div class="rt-card-title">📊 내 보정 현황 <span id="rt-my-month" style="color:var(--g500);font-weight:600"></span></div>
       <div id="rt-my-wrap"></div>
-    </div>
-    <div class="rt-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
-        <div class="rt-card-title" style="margin-bottom:0">💰 보정 인센티브</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <button class="mnbtn" onclick="incMonth(-1)">‹</button>
-          <b id="inc-month-title" style="min-width:86px;text-align:center"></b>
-          <button class="mnbtn" onclick="incMonth(1)">›</button>
-        </div>
-      </div>
-      <div id="inc-wrap"></div>
     </div>`;
     box.dataset.built='1';
   }
@@ -1938,10 +1927,9 @@ function renderRetouchList(){
           <span class="rt-cnt">${(r.count||0).toLocaleString()}장</span>
           <button class="rt-del" onclick="delRetouchRec('${r.id}')" title="삭제">✕</button>
         </div>`).join(''):'<div class="rt-empty">아직 등록된 기록이 없습니다</div>'}`;
-  renderIncStaff();
 }
 
-// ── 보정 인센티브 ──
+// ── 보정 인센티브 ── (대표님 화면에만 표시. 직원에게 열 때는 대표님 승인 후)
 // 한 달 기준량 = 하루 140장 × 그 달 출근일수. 업로드를 몰아서 해도 되도록 달 단위로 본다.
 // 기준량을 넘긴 장수(작업일·등록 순으로 뒤쪽 기록)만 인센티브 대상이고,
 // 그중 앨범 제작에 들어간 건(웨딩자동화시트 상품주소 기입)만 인정한다.
