@@ -1930,19 +1930,9 @@ function renderRetouchList(){
 }
 
 // ── 보정 인센티브 ── (대표님 화면에만 표시. 직원에게 열 때는 대표님 승인 후)
-// 한 달 기준량 = 하루 140장 × 그 달 출근일수. 업로드를 몰아서 해도 되도록 달 단위로 본다.
-// 기준량을 넘긴 장수(작업일·등록 순으로 뒤쪽 기록)만 인센티브 대상이고,
-// 그중 앨범 제작에 들어간 건(웨딩자동화시트 상품주소 기입)만 인정한다.
+// 초과분 = 그 달 보정 합계 − 하루 140장 × 그 달 출근일수. 업로드를 몰아서 해도 되도록 달 단위로 본다.
+// 지급은 다음 달 말 (재수정 기간을 두기 위함). 퇴사 시엔 인수인계(미완료 건 재수정) 후 정산.
 const INC_DAILY=140;
-const INC_ST={
-  done:{t:'앨범 진행 · 인정',c:'#0A9E50',b:'var(--green-l)'},
-  wait:{t:'앨범 주소 대기',c:'#B26A00',b:'#FFF4E0'},
-  nf:{t:'시트에서 못 찾음 · 예식일/이름 확인',c:'#D6303E',b:'var(--red-l)'},
-  dup:{t:'같은 날 동명이인 · 대표님 확인',c:'#D6303E',b:'var(--red-l)'},
-  unk:{t:'확인 전',c:'var(--g500)',b:'var(--g100)'}
-};
-let incDate=new Date();
-function incMonth(delta){ incDate=new Date(incDate.getFullYear(),incDate.getMonth()+delta,1); renderIncStaff(); }
 function incWorkDays(empId,mk){
   const s=new Set();
   gAtt(empId).forEach(l=>{
@@ -1954,48 +1944,23 @@ function incWorkDays(empId,mk){
   return s.size;
 }
 function incCalc(empId,mk){
-  const st=((_cache.album||{}).status)||{};
-  const recs=gRetouch().filter(r=>resolveEmpId(r)===empId&&rtWorkDate(r).slice(0,7)===mk)
-    .sort((a,b)=>(rtWorkDate(a)+(a.createdAt||''))<(rtWorkDate(b)+(b.createdAt||''))?-1:1);
+  const total=gRetouch().filter(r=>resolveEmpId(r)===empId&&rtWorkDate(r).slice(0,7)===mk)
+    .reduce((s,r)=>s+(r.count||0),0);
   const days=incWorkDays(empId,mk), base=days*INC_DAILY;
-  let cum=0; const over=[];
-  recs.forEach(r=>{
-    const n=r.count||0; cum+=n;
-    const ex=Math.min(n,Math.max(0,cum-base));
-    if(ex>0)over.push({r,ex,st:st[r.id]||'unk'});
-  });
-  const sum=f=>over.filter(f).reduce((s,o)=>s+o.ex,0);
-  return {days,base,total:cum,excess:Math.max(0,cum-base),over,
-    done:sum(o=>o.st==='done'),wait:sum(o=>o.st==='wait'),check:sum(o=>o.st==='nf'||o.st==='dup'||o.st==='unk')};
+  const [y,m]=mk.split('-').map(Number);
+  const pay=new Date(y,m+1,0);   // 다음 달 말일
+  return {days,base,total,excess:Math.max(0,total-base),pay:`${pay.getMonth()+1}/${pay.getDate()}`};
 }
 function incHTML(c){
-  const upd=(_cache.album||{}).updatedAt;
   const box=(l,v,col)=>`<div class="rt-sum-box"><div class="rt-sum-l">${l}</div><div class="rt-sum-v"${col?` style="color:${col}"`:''}>${v}</div></div>`;
   return `
     <div class="rt-sum">
       ${box(`기준량 (${c.days}일 × ${INC_DAILY})`,c.base.toLocaleString()+'장')}
       ${box('보정 합계',c.total.toLocaleString()+'장')}
-      ${box('기준 초과',c.excess.toLocaleString()+'장','var(--blue)')}
-      ${box('인정 (앨범 진행)',c.done.toLocaleString()+'장','#0A9E50')}
+      ${box('인센 대상 (초과분)',c.excess.toLocaleString()+'장','var(--blue)')}
+      ${box('지급 예정',c.excess?c.pay:'-')}
     </div>
-    <div class="goal-note">초과분 중 앨범 제작에 들어간 건만 인정됩니다 · 대기 ${c.wait.toLocaleString()}장${c.check?` · 확인 필요 ${c.check.toLocaleString()}장`:''}${upd?` · 앨범 진행 확인 ${upd.slice(5,10).replace('-','/')} ${upd.slice(11,16)}`:''}</div>
-    <div style="height:12px"></div>
-    ${c.over.length?c.over.map(o=>{const s=INC_ST[o.st]||INC_ST.unk;return `
-      <div class="rt-item">
-        <span class="rt-date">${rtWorkDate(o.r)||'-'}</span>
-        <span class="rt-bride">${o.r.bride}</span>
-        <span style="font-size:12px;color:var(--g500)">예식 ${o.r.wdate||'-'}</span>
-        <span class="rt-cnt">${o.ex.toLocaleString()}장${o.ex<(o.r.count||0)?` <span style="font-size:11px;color:var(--g500);font-weight:500">/ ${o.r.count}</span>`:''}</span>
-        <span style="font-size:12px;font-weight:700;color:${s.c};background:${s.b};padding:3px 8px;border-radius:6px;white-space:nowrap">${s.t}</span>
-      </div>`;}).join(''):`<div class="rt-empty">${c.days?'아직 기준량을 넘긴 장수가 없습니다':'이 달 출근 기록이 없습니다'}</div>`}`;
-}
-function renderIncStaff(){
-  const w=document.getElementById('inc-wrap');
-  if(!w||!cu||cu==='admin')return;
-  const mk=rtMonthKey(incDate);
-  const t=document.getElementById('inc-month-title');
-  if(t)t.textContent=`${incDate.getFullYear()}년 ${incDate.getMonth()+1}월`;
-  w.innerHTML=incHTML(incCalc(myEmp().id,mk));
+    <div class="goal-note">출근일수는 출근 기록 기준입니다 · 지급은 다음 달 말 · 퇴사 시 미완료 건 재수정 후 정산</div>`;
 }
 
 function setRtMode(m){
